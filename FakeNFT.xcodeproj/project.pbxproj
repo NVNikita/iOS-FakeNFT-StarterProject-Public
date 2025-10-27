@@ -47,6 +47,7 @@
 		E1A1B9DA2AA01CE400C3AFBC /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1A1B9D92AA01CE400C3AFBC /* TabBarController.swift */; };
 		E1CD40DC2A96BECC00BE7FE8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1CD40DB2A96BECC00BE7FE8 /* Localizable.strings */; };
 		EB1159F42EAE295A00354BB4 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F32EAE294D00354BB4 /* CartViewController.swift */; };
+		EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		E1CD40D92A96BE7D00BE7FE8 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		E1CD40DB2A96BECC00BE7FE8 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		EB1159F32EAE294D00354BB4 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
+		EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -367,9 +369,26 @@
 		EB1159F22EAE294600354BB4 /* Cart */ = {
 			isa = PBXGroup;
 			children = (
-				EB1159F32EAE294D00354BB4 /* CartViewController.swift */,
+				EB1159F52EAE5BDF00354BB4 /* Views */,
+				EB1159F62EAE5BEC00354BB4 /* CustomCells */,
 			);
 			path = Cart;
+			sourceTree = "<group>";
+		};
+		EB1159F52EAE5BDF00354BB4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				EB1159F32EAE294D00354BB4 /* CartViewController.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EB1159F62EAE5BEC00354BB4 /* CustomCells */ = {
+			isa = PBXGroup;
+			children = (
+				EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */,
+			);
+			path = CustomCells;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -528,6 +547,7 @@
 				3F6806D529CBBEC700B4F915 /* NetworkTask.swift in Sources */,
 				0CF2C2DB2A783C1B00FDC837 /* LoadingView.swift in Sources */,
 				558E39E72C68CE0A00FB86AC /* NftService.swift in Sources */,
+				EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */,
 				3F68069729CBBAF100B4F915 /* AppDelegate.swift in Sources */,
 				3F68069929CBBAF100B4F915 /* SceneDelegate.swift in Sources */,
 				0C79EE6C2A76DE2E00EE90EA /* ServicesAssemly.swift in Sources */,

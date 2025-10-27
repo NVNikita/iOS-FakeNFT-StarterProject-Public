@@ -10,6 +10,7 @@ import UIKit
 final class CartViewController: UIViewController {
     
     private lazy var nftTableView = UITableView()
+    private var countCells = 3 //MOCK
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +35,7 @@ final class CartViewController: UIViewController {
     private func setupTableView() {
         nftTableView.delegate = self
         nftTableView.dataSource = self
-        nftTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        nftTableView.register(NFTTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
     private func setupConstarints() {
@@ -42,7 +43,8 @@ final class CartViewController: UIViewController {
             nftTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             nftTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             nftTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            nftTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            nftTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            nftTableView.heightAnchor.constraint(equalToConstant: CGFloat(140 * countCells))
         ])
     }
     
@@ -50,11 +52,15 @@ final class CartViewController: UIViewController {
 
 extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
+        countCells
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+                as? NFTTableViewCell else {
+            return UITableViewCell()
+        }
+        cell.backgroundColor = .white
         return cell
     }
 }
