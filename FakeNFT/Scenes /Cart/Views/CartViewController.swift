@@ -11,6 +11,17 @@ final class CartViewController: UIViewController {
     
     private lazy var nftTableView = UITableView()
     private var countCells = 3 //MOCK
+    private lazy var footerStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 16
+        stackView.layer.masksToBounds = true
+        stackView.layer.cornerRadius = 12
+        stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        stackView.backgroundColor = UIColor.yaLightGrayLight
+        return stackView
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,9 +38,12 @@ final class CartViewController: UIViewController {
         view.backgroundColor = UIColor.background
         
         view.addSubview(nftTableView)
+        view.addSubview(footerStackView)
         
         nftTableView.translatesAutoresizingMaskIntoConstraints = false
         nftTableView.backgroundColor = .clear
+        
+        footerStackView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupTableView() {
@@ -45,8 +59,13 @@ final class CartViewController: UIViewController {
             nftTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             nftTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             nftTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            nftTableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            nftTableView.heightAnchor.constraint(equalToConstant: CGFloat(140 * countCells))
+            nftTableView.bottomAnchor.constraint(equalTo: footerStackView.topAnchor),
+            nftTableView.heightAnchor.constraint(equalToConstant: CGFloat(140 * countCells)),
+            
+            footerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            footerStackView.heightAnchor.constraint(equalToConstant: 76)
         ])
     }
     
