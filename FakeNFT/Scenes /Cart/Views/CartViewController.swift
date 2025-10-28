@@ -36,6 +36,8 @@ final class CartViewController: UIViewController {
         nftTableView.delegate = self
         nftTableView.dataSource = self
         nftTableView.register(NFTTableViewCell.self, forCellReuseIdentifier: "cell")
+        nftTableView.separatorStyle = .none
+        nftTableView.allowsSelection = false
     }
     
     private func setupConstarints() {
