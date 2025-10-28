@@ -10,7 +10,7 @@ import UIKit
 final class CartViewController: UIViewController {
     
     private lazy var nftTableView = UITableView()
-    private var countCells = 3 //MOCK
+    
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -21,6 +21,37 @@ final class CartViewController: UIViewController {
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         stackView.backgroundColor = UIColor.yaLightGrayLight
         return stackView
+    }()
+    
+    private lazy var nftCountLabel: UILabel = {
+        let label = UILabel()
+        label.text = "3 NFT"
+        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.textColor = .black
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    private lazy var priceNFTLabel: UILabel = {
+        let label = UILabel()
+        label.text = "3,54 ETH"
+        label.textColor = .systemGreen
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    private lazy var payButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("К оплате", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        button.backgroundColor = .black
+        button.titleLabel?.textAlignment = .center
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 16
+        button.addTarget(self, action: #selector(payButtonTap), for: .allEditingEvents)
+        return button
     }()
     
     override func viewDidLoad() {
@@ -39,11 +70,17 @@ final class CartViewController: UIViewController {
         
         view.addSubview(nftTableView)
         view.addSubview(footerStackView)
+        footerStackView.addSubview(nftCountLabel)
+        footerStackView.addSubview(priceNFTLabel)
+        footerStackView.addSubview(payButton)
         
         nftTableView.translatesAutoresizingMaskIntoConstraints = false
         nftTableView.backgroundColor = .clear
         
         footerStackView.translatesAutoresizingMaskIntoConstraints = false
+        nftCountLabel.translatesAutoresizingMaskIntoConstraints = false
+        priceNFTLabel.translatesAutoresizingMaskIntoConstraints = false
+        payButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupTableView() {
@@ -60,20 +97,35 @@ final class CartViewController: UIViewController {
             nftTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             nftTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             nftTableView.bottomAnchor.constraint(equalTo: footerStackView.topAnchor),
-            nftTableView.heightAnchor.constraint(equalToConstant: CGFloat(140 * countCells)),
+            nftTableView.heightAnchor.constraint(equalToConstant: CGFloat(140 * 3)),
             
             footerStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             footerStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             footerStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            footerStackView.heightAnchor.constraint(equalToConstant: 76)
+            footerStackView.heightAnchor.constraint(equalToConstant: 76),
+            
+            payButton.trailingAnchor.constraint(equalTo: footerStackView.trailingAnchor, constant: -16),
+            payButton.topAnchor.constraint(equalTo: footerStackView.topAnchor, constant: 16),
+            payButton.bottomAnchor.constraint(equalTo: footerStackView.bottomAnchor, constant: -16),
+            payButton.leadingAnchor.constraint(equalTo: footerStackView.leadingAnchor, constant: 119),
+            
+            nftCountLabel.topAnchor.constraint(equalTo: payButton.topAnchor),
+            nftCountLabel.leadingAnchor.constraint(equalTo: footerStackView.leadingAnchor, constant: 16),
+            
+            priceNFTLabel.bottomAnchor.constraint(equalTo: payButton.bottomAnchor),
+            priceNFTLabel.leadingAnchor.constraint(equalTo: nftCountLabel.leadingAnchor)
         ])
+    }
+    
+    @objc private func payButtonTap() {
+        
     }
     
 }
 
 extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        countCells
+        3
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
