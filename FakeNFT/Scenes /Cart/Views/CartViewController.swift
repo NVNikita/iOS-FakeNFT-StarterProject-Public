@@ -9,6 +9,8 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
+    private var nftItems: [String] = []
+    
     private lazy var nftTableView = UITableView()
     
     private lazy var footerStackView: UIStackView = {
@@ -54,11 +56,22 @@ final class CartViewController: UIViewController {
         return button
     }()
     
+    private lazy var placeholderTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Корзина пуста"
+        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.textColor = .black
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupTableView()
         setupConstarints()
+        checkPlaceholder()
     }
     
     private func setupNavigationBar() {
@@ -73,6 +86,7 @@ final class CartViewController: UIViewController {
         footerStackView.addSubview(nftCountLabel)
         footerStackView.addSubview(priceNFTLabel)
         footerStackView.addSubview(payButton)
+        view.addSubview(placeholderTitle)
         
         nftTableView.translatesAutoresizingMaskIntoConstraints = false
         nftTableView.backgroundColor = .clear
@@ -81,6 +95,7 @@ final class CartViewController: UIViewController {
         nftCountLabel.translatesAutoresizingMaskIntoConstraints = false
         priceNFTLabel.translatesAutoresizingMaskIntoConstraints = false
         payButton.translatesAutoresizingMaskIntoConstraints = false
+        placeholderTitle.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupTableView() {
@@ -113,8 +128,21 @@ final class CartViewController: UIViewController {
             nftCountLabel.leadingAnchor.constraint(equalTo: footerStackView.leadingAnchor, constant: 16),
             
             priceNFTLabel.bottomAnchor.constraint(equalTo: payButton.bottomAnchor),
-            priceNFTLabel.leadingAnchor.constraint(equalTo: nftCountLabel.leadingAnchor)
+            priceNFTLabel.leadingAnchor.constraint(equalTo: nftCountLabel.leadingAnchor),
+            
+            placeholderTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            placeholderTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            placeholderTitle.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            placeholderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    private func checkPlaceholder() {
+        let isEmpty = nftItems.isEmpty
+        
+        placeholderTitle.isHidden = !isEmpty
+        nftTableView.isHidden = isEmpty
+        footerStackView.isHidden = isEmpty
     }
     
     @objc private func payButtonTap() {
