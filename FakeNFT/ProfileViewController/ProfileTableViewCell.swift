@@ -2,88 +2,83 @@ import UIKit
 import Kingfisher
 
 final class ProfileView: UIView {
+    
+    private var nftsCount: Int = Constraints.initialNFTsCount
+    private var likesCount: Int = Constraints.initialLikesCount
 
-    // MARK: - State
-
-    private var nftsCount: Int = 3
-    private var likesCount: Int = 0
-
-    // MARK: - Callbacks
-
+    // MARK: - Public Callbacks (для контроллера)
     var websiteLabelTapped: ((String) -> Void)?
     var favoritesTapped: (() -> Void)?
     var aboutDeveloper: ((String) -> Void)?
     var myNFTTapped: (() -> Void)?
-
+    
     // MARK: - UI Elements
-
+    
     private lazy var profileAvatar: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "person.circle.fill")
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 35
+        imageView.layer.cornerRadius = Constraints.avatarCornerRadius
         imageView.clipsToBounds = true
         return imageView
     }()
-
+    
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "User Name"
+        label.text = "Mock Name"
         label.textColor = UIColor(named: "YBlackColor")
-        label.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        label.font = FontStyle.title
         return label
     }()
-
+    
     private lazy var userWebSiteLabel: UILabel = {
         let label = UILabel()
         label.text = "practicum.yandex.ru"
         label.textColor = .systemBlue
-        label.font = UIFont.systemFont(ofSize: 15)
-
+        label.font = FontStyle.website
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapOnWebsiteLabel))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(tapGesture)
-
+        
         return label
     }()
-
+    
     private lazy var profileInfoLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("NoInformation", comment: "")
         label.textColor = UIColor(named: "YBlackColor")
-        label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        label.numberOfLines = 5
+        label.font = FontStyle.info
+        label.numberOfLines = Constraints.infoNumberOfLines
         label.lineBreakMode = .byWordWrapping
         return label
     }()
-
+    
     private lazy var profileTableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.isScrollEnabled = false
-        tableView.rowHeight = 54
+        tableView.rowHeight = Constraints.tableRowHeight
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ProfileCell")
         return tableView
     }()
-
+    
     private lazy var profileContainerView = UIView()
-
-    // MARK: - Init
-
+    
+    // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
     }
-
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Layout
-
+    
+    // MARK: - Private UI setup
     private func setupLayout() {
         addSubview(profileContainerView)
         profileContainerView.addSubview(profileAvatar)
@@ -91,58 +86,60 @@ final class ProfileView: UIView {
         profileContainerView.addSubview(profileInfoLabel)
         profileContainerView.addSubview(userWebSiteLabel)
         addSubview(profileTableView)
-
-        [profileContainerView, profileAvatar, userNameLabel, profileInfoLabel, userWebSiteLabel, profileTableView]
-            .forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
-
+        
+        profileContainerView.translatesAutoresizingMaskIntoConstraints = false
+        profileAvatar.translatesAutoresizingMaskIntoConstraints = false
+        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        profileInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        userWebSiteLabel.translatesAutoresizingMaskIntoConstraints = false
+        profileTableView.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
             profileContainerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Constraints.containerTop),
             profileContainerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constraints.horizontalPadding),
             profileContainerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constraints.horizontalPadding),
-
+            
             profileAvatar.topAnchor.constraint(equalTo: profileContainerView.topAnchor),
             profileAvatar.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor),
             profileAvatar.widthAnchor.constraint(equalToConstant: Constraints.avatarSize),
             profileAvatar.heightAnchor.constraint(equalToConstant: Constraints.avatarSize),
-
+            
             userNameLabel.centerYAnchor.constraint(equalTo: profileAvatar.centerYAnchor),
-            userNameLabel.leadingAnchor.constraint(equalTo: profileAvatar.trailingAnchor, constant: 16),
-
+            userNameLabel.leadingAnchor.constraint(equalTo: profileAvatar.trailingAnchor, constant: Constraints.nameToAvatarSpacing),
+                 
             profileInfoLabel.topAnchor.constraint(equalTo: profileAvatar.bottomAnchor, constant: Constraints.infoTopSpacing),
             profileInfoLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor),
             profileInfoLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor),
-
+            
             userWebSiteLabel.topAnchor.constraint(equalTo: profileInfoLabel.bottomAnchor, constant: Constraints.websiteTopSpacing),
             userWebSiteLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor),
             userWebSiteLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor),
             userWebSiteLabel.bottomAnchor.constraint(equalTo: profileContainerView.bottomAnchor),
-
+            
             profileTableView.topAnchor.constraint(equalTo: profileContainerView.bottomAnchor, constant: Constraints.tableTopSpacing),
             profileTableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             profileTableView.trailingAnchor.constraint(equalTo: trailingAnchor),
             profileTableView.heightAnchor.constraint(equalToConstant: Constraints.tableHeight)
         ])
     }
-
+    
     // MARK: - Actions
-
     @objc private func didTapOnWebsiteLabel() {
         if let text = userWebSiteLabel.text {
             websiteLabelTapped?(text)
         }
     }
-
-    // MARK: - Public
-
+    
+    // MARK: - Public API
     func updateUI(with profile: Profile) {
         userNameLabel.text = profile.name
-
+        
         if let avatarURLString = profile.avatar, let url = URL(string: avatarURLString) {
             profileAvatar.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
         } else {
             profileAvatar.image = UIImage(systemName: "person.crop.circle")
         }
-
+        
         if let website = profile.website {
             let cleanedWebsite = website
                 .replacingOccurrences(of: "https://", with: "")
@@ -151,25 +148,24 @@ final class ProfileView: UIView {
         } else {
             userWebSiteLabel.isHidden = true
         }
-
+        
         profileInfoLabel.text = profile.description ?? NSLocalizedString("NoInformation", comment: "")
-
+        
         profileTableView.reloadData()
     }
 }
 
-// MARK: - UITableViewDelegate & UITableViewDataSource
+// MARK: - UITableViewDataSource
 
 extension ProfileView: UITableViewDelegate, UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        3
+        return Constraints.tableRowsCount
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath)
-
+        
         switch indexPath.row {
         case 0:
             cell.textLabel?.text = NSLocalizedString("MyNFT", comment: "") + " (\(nftsCount))"
@@ -180,23 +176,26 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         default:
             break
         }
-
-        cell.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        
+        cell.textLabel?.font = FontStyle.cellTitle
         cell.textLabel?.textColor = UIColor(named: "YBlackColor")
-
+        
         let chevronImage = UIImage(
             systemName: "chevron.forward",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 17, weight: .regular, scale: .medium)
+            withConfiguration: UIImage.SymbolConfiguration(
+                pointSize: Constraints.chevronPointSize,
+                weight: .regular,
+                scale: .medium
+            )
         )?.withRenderingMode(.alwaysTemplate)
-
         let chevronImageView = UIImageView(image: chevronImage)
+        
         cell.accessoryView = chevronImageView
         cell.tintColor = UIColor(named: "YBlackColor")
         cell.selectionStyle = .none
-
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
         case 0:
@@ -216,9 +215,32 @@ private extension ProfileView {
         static let containerTop: CGFloat = 20
         static let horizontalPadding: CGFloat = 16
         static let avatarSize: CGFloat = 70
+        static let avatarCornerRadius: CGFloat = 35
         static let infoTopSpacing: CGFloat = 20
         static let websiteTopSpacing: CGFloat = 12
         static let tableTopSpacing: CGFloat = 40
-        static let tableHeight: CGFloat = 54 * 3
+        
+        static let userNameFontSize: CGFloat = 22
+        static let websiteFontSize: CGFloat = 15
+        static let infoFontSize: CGFloat = 13
+        static let infoNumberOfLines: Int = 5
+        static let nameToAvatarSpacing: CGFloat = 16
+        
+        static let tableRowHeight: CGFloat = 54
+        static let tableRowsCount: Int = 3
+        static var tableHeight: CGFloat { tableRowHeight * CGFloat(tableRowsCount) }
+        
+        static let chevronPointSize: CGFloat = 17
+        static let cellTextFontSize: CGFloat = 17
+        
+        static let initialNFTsCount: Int = 0
+        static let initialLikesCount: Int = 0
+    }
+    
+    enum FontStyle {
+        static let title = UIFont.systemFont(ofSize: Constraints.userNameFontSize, weight: .bold)
+        static let website = UIFont.systemFont(ofSize: Constraints.websiteFontSize, weight: .regular)
+        static let info = UIFont.systemFont(ofSize: Constraints.infoFontSize, weight: .regular)
+        static let cellTitle = UIFont.systemFont(ofSize: Constraints.cellTextFontSize, weight: .bold)
     }
 }
