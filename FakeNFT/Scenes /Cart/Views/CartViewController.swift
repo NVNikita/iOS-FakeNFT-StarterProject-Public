@@ -9,7 +9,7 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
-    private var nftItems: [String] = []
+    private var nftItems: [String] = ["gg"]
     
     private lazy var nftTableView = UITableView()
     
@@ -52,7 +52,7 @@ final class CartViewController: UIViewController {
         button.titleLabel?.textAlignment = .center
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16
-        button.addTarget(self, action: #selector(payButtonTap), for: .allEditingEvents)
+        button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
         return button
     }()
     
@@ -146,9 +146,24 @@ final class CartViewController: UIViewController {
     }
     
     @objc private func payButtonTap() {
+        let payVC = PaymentViewController()
         
+        let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"),
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(backButtonTapped))
+        backButton.tintColor = .black
+        
+        payVC.navigationItem.leftBarButtonItem = backButton
+        
+        let navVC = UINavigationController(rootViewController: payVC)
+        navVC.modalPresentationStyle = .fullScreen
+        present(navVC, animated: true)
     }
-    
+
+    @objc private func backButtonTapped() {
+        dismiss(animated: true)
+    }
 }
 
 extension CartViewController: UITableViewDelegate, UITableViewDataSource {
