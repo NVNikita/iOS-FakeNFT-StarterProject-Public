@@ -1,15 +1,9 @@
-//
-//  ProfileService.swift
-//  FakeNFT
-//
-//  Created by Sergey on 26.10.2025.
-//
 
 import Foundation
 
 typealias ProfileCompletion = (Result<Profile, Error>) -> Void
 
-protocol ProfileService {
+protocol ProfileServiceProtocol {
     func loadProfile(completion: @escaping ProfileCompletion)
     func updateProfile(
         name: String,
@@ -24,7 +18,7 @@ protocol ProfileService {
     )
 }
 
-final class ProfileServiceImpl: ProfileService {
+final class ProfileServiceImpl: ProfileServiceProtocol {
 
     private let networkClient: NetworkClient
 
