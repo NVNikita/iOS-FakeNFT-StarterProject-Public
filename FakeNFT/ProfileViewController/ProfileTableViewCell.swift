@@ -4,7 +4,7 @@ import Kingfisher
 final class ProfileView: UIView {
     
     private var nftsCount: Int = Constraints.initialNFTsCount
-    private var likesCount: Int = Constraints.initialLikesCount
+    private var likesCount: Int = 0
 
     // MARK: - Public Callbacks (для контроллера)
     var websiteLabelTapped: ((String) -> Void)?
@@ -80,20 +80,24 @@ final class ProfileView: UIView {
     
     // MARK: - Private UI setup
     private func setupLayout() {
-        addSubview(profileContainerView)
-        profileContainerView.addSubview(profileAvatar)
-        profileContainerView.addSubview(userNameLabel)
-        profileContainerView.addSubview(profileInfoLabel)
-        profileContainerView.addSubview(userWebSiteLabel)
-        addSubview(profileTableView)
+        addSubviews()
+        setupConstraints()
+    }
+    
+    private func addSubviews() {
         
-        profileContainerView.translatesAutoresizingMaskIntoConstraints = false
-        profileAvatar.translatesAutoresizingMaskIntoConstraints = false
-        userNameLabel.translatesAutoresizingMaskIntoConstraints = false
-        profileInfoLabel.translatesAutoresizingMaskIntoConstraints = false
-        userWebSiteLabel.translatesAutoresizingMaskIntoConstraints = false
-        profileTableView.translatesAutoresizingMaskIntoConstraints = false
+        [profileContainerView, profileTableView].forEach {
+            addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
         
+        [profileAvatar, userNameLabel, profileInfoLabel, userWebSiteLabel].forEach {
+            profileContainerView.addSubview($0)
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             profileContainerView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Constraints.containerTop),
             profileContainerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constraints.horizontalPadding),
@@ -150,9 +154,11 @@ final class ProfileView: UIView {
         }
         
         profileInfoLabel.text = profile.description ?? NSLocalizedString("NoInformation", comment: "")
+
         
         profileTableView.reloadData()
     }
+    
 }
 
 // MARK: - UITableViewDataSource
@@ -234,7 +240,6 @@ private extension ProfileView {
         static let cellTextFontSize: CGFloat = 17
         
         static let initialNFTsCount: Int = 0
-        static let initialLikesCount: Int = 0
     }
     
     enum FontStyle {
