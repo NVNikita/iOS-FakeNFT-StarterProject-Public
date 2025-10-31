@@ -48,6 +48,7 @@
 		E1CD40DC2A96BECC00BE7FE8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1CD40DB2A96BECC00BE7FE8 /* Localizable.strings */; };
 		EB1159F42EAE295A00354BB4 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F32EAE294D00354BB4 /* CartViewController.swift */; };
 		EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */; };
+		EB1B5A132EB5019C00ACC517 /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		E1CD40DB2A96BECC00BE7FE8 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		EB1159F32EAE294D00354BB4 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTTableViewCell.swift; sourceTree = "<group>"; };
+		EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,6 +380,7 @@
 		EB1159F52EAE5BDF00354BB4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */,
 				EB1159F32EAE294D00354BB4 /* CartViewController.swift */,
 			);
 			path = Views;
@@ -539,6 +542,7 @@
 				3F478ED129DB476500F6D39E /* Fonts.swift in Sources */,
 				0C79EE6A2A76DE1000EE90EA /* NftDetailAssembly.swift in Sources */,
 				3FC8C39329D246BA0081F015 /* DateFormatters+Presets.swift in Sources */,
+				EB1B5A132EB5019C00ACC517 /* PaymentViewController.swift in Sources */,
 				0CFCB7422A78013E0009A829 /* Nft.swift in Sources */,
 				0CF2C2DD2A783CE600FDC837 /* ErrorView.swift in Sources */,
 				0C79EE682A76DE0900EE90EA /* NftDetailPresenter.swift in Sources */,
