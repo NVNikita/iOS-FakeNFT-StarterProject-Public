@@ -18,6 +18,7 @@ final class ProfileViewController: UIViewController {
         let imageButton = UIImage(named: "Edit")
         button.setImage(imageButton, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(editProfileTapped), for: .touchUpInside)
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         return button
@@ -107,7 +108,15 @@ final class ProfileViewController: UIViewController {
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
-
+    
+    @objc private func editProfileTapped() {
+       guard let profile = profile else { return }
+       let assembly = EditProfileAssembly(servicesAssembly: servicesAssembly, delegate: self)
+       let editVC = assembly.build(with: profile)
+       editVC.modalPresentationStyle = .formSheet
+       present(editVC, animated: true, completion: nil)
+   }
+    
     private func didTapOnWebsiteLabel(with urlString: String) {
         var validURLString = urlString
         if !urlString.hasPrefix("https://") {
@@ -131,3 +140,31 @@ final class ProfileViewController: UIViewController {
         navigationController?.pushViewController(webViewController, animated: true)
     }
 }
+
+// MARK: - EditProfileDelegate
+
+ extension ProfileViewController: EditProfileDelegate {
+     func didUpdateProfile(_ profile: Profile) {
+        self.profile = profile
+        profileView.updateUI(with: profile)
+        let name = profile.name ?? ""
+        let description = profile.description ?? ""
+         let website = profile.website ?? ""
+         let avatar = profile.avatar ?? ""
+        servicesAssembly.profileService.updateProfile(
+            name: name,
+            description: description,
+            website: website,
+             avatar: avatar
+         ) { result in
+             switch result {
+            case .success(let updatedProfile):
+                print("Profile successfully updated: \(updatedProfile)")
+            case .failure(let error):
+                print("Error updating profile: \(error)")
+             }
+         }
+     }
+ }
+
+

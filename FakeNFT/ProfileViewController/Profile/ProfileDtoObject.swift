@@ -17,8 +17,7 @@ struct ProfileDtoObject: Dto {
         case likes
     }
 
-    // Сервер сейчас принимает application/x-www-form-urlencoded.
-    // Поэтому возвращаем словарь строк. Для массива likes — объединяем через запятую.
+
     func asDictionary() -> [String: String] {
         return [
             CodingKeys.name.rawValue: name.isEmpty ? "" : name,
