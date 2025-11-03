@@ -9,7 +9,7 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
-    private var nftItems: [String] = ["gg"]
+    private var nftItems: [String] = ["gg"] // MOCK for footerStackView
     
     private lazy var nftTableView = UITableView()
     
