@@ -19,7 +19,7 @@ final class NFTTableViewCell: UITableViewCell {
     
     lazy var nameNFTLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = UIFont.bold17SFPro
         label.textColor = .black
         return label
     }()
@@ -35,7 +35,7 @@ final class NFTTableViewCell: UITableViewCell {
     
     lazy var priceTitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .regular)
+        label.font = UIFont.regular13SFPro
         label.textColor = .black
         label.text = "Цена"
         return label
@@ -43,7 +43,7 @@ final class NFTTableViewCell: UITableViewCell {
     
     lazy var priceLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = UIFont.bold17SFPro
         label.textColor = .black
         return label
     }()

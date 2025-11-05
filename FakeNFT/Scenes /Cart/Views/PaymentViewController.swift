@@ -28,7 +28,7 @@ final class PaymentViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Оплатить", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+        button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = .black
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16
@@ -42,7 +42,7 @@ final class PaymentViewController: UIViewController {
         textView.isScrollEnabled = false
         textView.backgroundColor = .clear
         textView.textAlignment = .center
-        textView.font = .systemFont(ofSize: 13, weight: .regular)
+        textView.font = UIFont.regular13SFPro
         textView.textColor = .black
         textView.delegate = self
         return textView
@@ -64,7 +64,7 @@ final class PaymentViewController: UIViewController {
         appearance.backgroundColor = .white
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.black,
-            .font: UIFont.systemFont(ofSize: 17, weight: .bold)
+            .font: UIFont.bold17SFPro
         ]
         
         navigationController?.navigationBar.standardAppearance = appearance
@@ -91,7 +91,7 @@ final class PaymentViewController: UIViewController {
                                           range: NSRange(location: 0, length: agreementText.count))
             
             attributedString.addAttribute(.font,
-                                          value: UIFont.systemFont(ofSize: 13),
+                                          value: UIFont.regular13SFPro,
                                           range: NSRange(location: 0, length: agreementText.count))
         }
         

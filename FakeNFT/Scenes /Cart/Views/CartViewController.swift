@@ -28,7 +28,7 @@ final class CartViewController: UIViewController {
     private lazy var nftCountLabel: UILabel = {
         let label = UILabel()
         label.text = "3 NFT"
-        label.font = .systemFont(ofSize: 15, weight: .regular)
+        label.font = UIFont.regular15SFPro
         label.textColor = .black
         label.numberOfLines = 1
         return label
@@ -38,7 +38,7 @@ final class CartViewController: UIViewController {
         let label = UILabel()
         label.text = "3,54 ETH"
         label.textColor = .systemGreen
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = UIFont.bold17SFPro
         label.numberOfLines = 1
         return label
     }()
@@ -47,7 +47,7 @@ final class CartViewController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("К оплате", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = .black
         button.titleLabel?.textAlignment = .center
         button.layer.masksToBounds = true
@@ -59,7 +59,7 @@ final class CartViewController: UIViewController {
     private lazy var placeholderTitle: UILabel = {
         let label = UILabel()
         label.text = "Корзина пуста"
-        label.font = .systemFont(ofSize: 17, weight: .bold)
+        label.font = UIFont.bold17SFPro
         label.textColor = .black
         label.numberOfLines = 1
         label.textAlignment = .center
