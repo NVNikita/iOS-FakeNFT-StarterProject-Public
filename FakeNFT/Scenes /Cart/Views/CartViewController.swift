@@ -9,7 +9,7 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
-    private var nftItems: [String] = ["gg"] // MOCK for footerStackView
+    private var nftItems: [String] = ["test"] // MOCK for footerStackView
     
     private lazy var nftTableView = UITableView()
     
@@ -29,7 +29,7 @@ final class CartViewController: UIViewController {
         let label = UILabel()
         label.text = "3 NFT"
         label.font = UIFont.regular15SFPro
-        label.textColor = .black
+        label.textColor = UIColor.blackYP
         label.numberOfLines = 1
         return label
     }()
@@ -37,7 +37,7 @@ final class CartViewController: UIViewController {
     private lazy var priceNFTLabel: UILabel = {
         let label = UILabel()
         label.text = "3,54 ETH"
-        label.textColor = .systemGreen
+        label.textColor = UIColor.greenYP
         label.font = UIFont.bold17SFPro
         label.numberOfLines = 1
         return label
@@ -48,7 +48,7 @@ final class CartViewController: UIViewController {
         button.setTitle("К оплате", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
-        button.backgroundColor = .black
+        button.backgroundColor = UIColor.blackYP
         button.titleLabel?.textAlignment = .center
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16
@@ -60,7 +60,7 @@ final class CartViewController: UIViewController {
         let label = UILabel()
         label.text = "Корзина пуста"
         label.font = UIFont.bold17SFPro
-        label.textColor = .black
+        label.textColor = UIColor.blackYP
         label.numberOfLines = 1
         label.textAlignment = .center
         return label
@@ -79,7 +79,7 @@ final class CartViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = UIColor.background
+        view.backgroundColor = UIColor.whiteYP
         
         view.addSubview(nftTableView)
         view.addSubview(footerStackView)
@@ -152,7 +152,7 @@ final class CartViewController: UIViewController {
                                      style: .plain,
                                      target: self,
                                      action: #selector(backButtonTapped))
-        backButton.tintColor = .black
+        backButton.tintColor = UIColor.blackYP
         
         payVC.navigationItem.leftBarButtonItem = backButton
         
@@ -176,7 +176,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
                 as? NFTTableViewCell else {
             return UITableViewCell()
         }
-        cell.backgroundColor = .white
+        cell.backgroundColor = UIColor.white
         return cell
     }
 }

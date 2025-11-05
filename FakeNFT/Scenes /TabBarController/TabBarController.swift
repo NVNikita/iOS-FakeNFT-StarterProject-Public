@@ -29,7 +29,9 @@ final class TabBarController: UITabBarController {
         cartController.tabBarItem = cartItem
 
         viewControllers = [catalogController, cartController]
-
+        
+        tabBar.tintColor = .systemBlue
+        tabBar.unselectedItemTintColor = UIColor.blackYP
         view.backgroundColor = .systemBackground
     }
 }

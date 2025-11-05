@@ -37,7 +37,7 @@ final class WebViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor.whiteYP
         
         view.addSubview(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +57,7 @@ final class WebViewController: UIViewController {
             target: self,
             action: #selector(backButtonTapped)
         )
-        backButton.tintColor = .black
+        backButton.tintColor = UIColor.blackYP
         
         navigationItem.leftBarButtonItem = backButton
         
@@ -70,7 +70,7 @@ final class WebViewController: UIViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         
-        navigationController?.navigationBar.tintColor = .black // Цвет кнопок
+        navigationController?.navigationBar.tintColor = .black
         
         navigationController?.setNavigationBarHidden(false, animated: false)
     }

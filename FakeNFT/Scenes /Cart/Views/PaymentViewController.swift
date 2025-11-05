@@ -20,7 +20,7 @@ final class PaymentViewController: UIViewController {
         stackView.layer.masksToBounds = true
         stackView.layer.cornerRadius = 12
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        stackView.backgroundColor = UIColor.yaLightGrayLight
+        stackView.backgroundColor = UIColor.lightGreyYP
         return stackView
     }()
     
@@ -29,7 +29,7 @@ final class PaymentViewController: UIViewController {
         button.setTitle("Оплатить", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
-        button.backgroundColor = .black
+        button.backgroundColor = UIColor.blackYP
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16
         button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
@@ -43,7 +43,7 @@ final class PaymentViewController: UIViewController {
         textView.backgroundColor = .clear
         textView.textAlignment = .center
         textView.font = UIFont.regular13SFPro
-        textView.textColor = .black
+        textView.textColor = UIColor.blackYP
         textView.delegate = self
         return textView
     }()
@@ -63,7 +63,7 @@ final class PaymentViewController: UIViewController {
         appearance.configureWithDefaultBackground()
         appearance.backgroundColor = .white
         appearance.titleTextAttributes = [
-            .foregroundColor: UIColor.black,
+            .foregroundColor: UIColor.blackYP,
             .font: UIFont.bold17SFPro
         ]
         
@@ -87,7 +87,7 @@ final class PaymentViewController: UIViewController {
                                           range: nsRange)
             
             attributedString.addAttribute(.foregroundColor,
-                                          value: UIColor.black,
+                                          value: UIColor.blackYP,
                                           range: NSRange(location: 0, length: agreementText.count))
             
             attributedString.addAttribute(.font,
@@ -99,7 +99,7 @@ final class PaymentViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor.whiteYP
         
         view.addSubview(footerStackView)
         
