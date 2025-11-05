@@ -4,11 +4,11 @@ import Kingfisher
 
 
 final class EditProfileViewController: UIViewController, EditProfileViewInput {
-
+    
     // MARK: - Properties
     private let presenter: EditProfileViewOutput
     private lazy var editProfileView = EditProfileView()
-
+    
     // MARK: - Init
     init(presenter: EditProfileViewOutput) {
         self.presenter = presenter
@@ -18,24 +18,22 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Lifecycle
     override func loadView() {
-        // Шаг: назначить кастомную вью редактирования
         self.view = editProfileView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Шаг: связать UI-события с презентером
+        
         wireActions()
-        // Шаг: запросить данные для отображения
         presenter.viewDidLoad()
     }
-
+    
     // MARK: - Wiring
     private func wireActions() {
-        // Шаг: закрыть экран и отправить значения полей на сохранение
+        
         editProfileView.closeTapped = { [weak self] in
             guard let self else { return }
             self.presenter.didTapClose(
@@ -57,7 +55,7 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
             self?.presenter.didChangeWebsite(text)
         }
     }
-
+    
     // MARK: - EditProfileViewInput (реализация протокола)
     func display(profile: EditProfileViewData) {
         editProfileView.nameTextView.text = profile.name
@@ -69,15 +67,14 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
             editProfileView.profileAvatar.image = UIImage(systemName: "person.crop.circle")
         }
     }
-
+    
     func setAvatar(url: URL?) {
         if let url {
             editProfileView.profileAvatar.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
         }
     }
-
+    
     func setLoading(_ isLoading: Bool) {
-        // Шаг: простой индикатор загрузки (можно заменить на ProgressHUD)
         view.isUserInteractionEnabled = !isLoading
         if isLoading {
             let indicator = UIActivityIndicatorView(style: .medium)
@@ -89,13 +86,13 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
             view.viewWithTag(9999)?.removeFromSuperview()
         }
     }
-
+    
     func showValidationError(message: String) {
         let alert = UIAlertController(title: NSLocalizedString("Error.title", comment: ""), message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-
+    
     func setChangePhotoButtonVisible(_ visible: Bool) {
         editProfileView.profileAvatar.isHidden = !visible
     }

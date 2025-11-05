@@ -49,13 +49,13 @@ struct EditProfileViewData {
 // MARK: - Presenter
 
 final class EditProfilePresenterImpl: EditProfileViewOutput {
-
+    
     weak var view: EditProfileViewInput?
     weak var outputDelegate: EditProfileDelegate?
-
+    
     private let interactor: EditProfileInteractorInput
     private let router: EditProfileRouterInput
-
+    
     // Текущее состояние редактируемого профиля
     private var profile: Profile
     // Черновые значения полей
@@ -63,7 +63,7 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
     private var draftDescription: String?
     private var draftWebsite: String?
     private var draftAvatarURL: String?
-
+    
     init(interactor: EditProfileInteractorInput,
          router: EditProfileRouterInput,
          initialProfile: Profile) {
@@ -71,19 +71,19 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         self.router = router
         self.profile = initialProfile
     }
-
+    
     // MARK: - EditProfileViewOutput
-
+    
     func viewDidLoad() {
         let viewData = makeViewData(from: profile)
         view?.display(profile: viewData)
     }
-
+    
     func didTapClose(name: String?, description: String?, website: String?) {
         draftName = name
         draftDescription = description
         draftWebsite = website
-
+        
         // Сформировать итоговый профиль
         var updated = profile
         updated.name = draftName
@@ -92,9 +92,9 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         if let avatar = draftAvatarURL {
             updated.avatar = avatar
         }
-
+        
         view?.setLoading(true)
-
+        
         // Не перетираем лайки: просим interactor загрузить актуальный профиль,
         // переносим likes из него, а затем отправляем update
         interactor.loadCurrentProfile { [weak self] result in
@@ -123,7 +123,7 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
             }
         }
     }
-
+    
     func didTapChangeAvatar() {
         router.presentAvatarURLPrompt { [weak self] text in
             guard let self else { return }
@@ -138,21 +138,21 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
             self.view?.setAvatar(url: url)
         }
     }
-
+    
     func didChangeName(_ text: String) {
         draftName = text
     }
-
+    
     func didChangeDescription(_ text: String) {
         draftDescription = text
     }
-
+    
     func didChangeWebsite(_ text: String) {
         draftWebsite = text
     }
-
+    
     // MARK: - Helpers
-
+    
     private func makeViewData(from profile: Profile) -> EditProfileViewData {
         let name = profile.name ?? ""
         let description = profile.description ?? ""
@@ -160,7 +160,7 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         let avatarURL = URL(string: profile.avatar ?? "")
         return EditProfileViewData(name: name, description: description, website: website, avatarURL: avatarURL)
     }
-
+    
     private static func humanReadable(error: Error) -> String {
         switch error {
         case is NetworkClientError:

@@ -260,57 +260,57 @@ private extension EditProfileView {
             static let closeButtonTrailing: CGFloat = -16
             static let closeButtonTop: CGFloat = 30
             static let buttonSize: CGFloat = 44
-
+            
             static let avatarTop: CGFloat = 22
             static let avatarSize: CGFloat = 70
             static let avatarButtonSize: CGFloat = 70
-
+            
             static let loadImageButtonTop: CGFloat = 4
             static let loadImageButtonFrameWidth: CGFloat = 250
             static let loadImageButtonFrameHeight: CGFloat = 44
-
+            
             static let nameLabelTop: CGFloat = 24
             static let textViewTop: CGFloat = 8
             static let userInfoLabelTop: CGFloat = 24
             static let userSiteLabelTop: CGFloat = 24
             static let horizontalPadding: CGFloat = 16
-
+            
             static let nameTextViewHeight: CGFloat = 44
             static let infoTextViewHeight: CGFloat = 132
             static let siteTextViewHeight: CGFloat = 44
-
+            
             static let profileAvatarCornerRadius: CGFloat = 35
             static let profileAvatarButtonCornerRadius: CGFloat = 35
             static let textViewCornerRadius: CGFloat = 12
-
+            
             static let profileAvatarButtonTitleLines: Int = 2
         }
-
+        
         enum Inset {
             static let textViewTop: CGFloat = 11
             static let textViewLeft: CGFloat = 16
             static let textViewBottom: CGFloat = 11
             static let textViewRight: CGFloat = 16
         }
-
+        
         enum Font {
             static let sectionTitleSize: CGFloat = 22
             static let sectionTitleWeight: UIFont.Weight = .bold
-
+            
             static let textViewSize: CGFloat = 17
             static let textViewWeight: UIFont.Weight = .regular
-
+            
             static let loadImageButtonSize: CGFloat = 17
             static let loadImageButtonWeight: UIFont.Weight = .regular
-
+            
             static let avatarButtonTitleSize: CGFloat = 10
             static let avatarButtonTitleWeight: UIFont.Weight = .medium
         }
-
+        
         enum Color {
             static let avatarButtonBackgroundAlpha: CGFloat = 0.6
         }
-
+        
         enum Keyboard {
             static let shiftFactor: CGFloat = 0.5
         }

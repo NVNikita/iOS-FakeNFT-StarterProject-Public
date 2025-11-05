@@ -19,20 +19,20 @@ protocol ProfileServiceProtocol {
 }
 
 final class ProfileServiceImpl: ProfileServiceProtocol {
-
+    
     private let networkClient: NetworkClient
-
+    
     init(networkClient: NetworkClient) {
         self.networkClient = networkClient
     }
-
+    
     func loadProfile(completion: @escaping ProfileCompletion) {
         let request = ProfileRequest()
         networkClient.send(request: request, type: Profile.self) { result in
             completion(result)
         }
     }
-
+    
     func updateProfile(
         name: String,
         description: String,
@@ -57,7 +57,7 @@ final class ProfileServiceImpl: ProfileServiceProtocol {
             }
         }
     }
-
+    
     func updateLikes(
         likes: [String],
         completion: @escaping ProfileCompletion
