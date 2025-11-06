@@ -9,6 +9,12 @@ final class TabBarController: UITabBarController {
         image: UIImage(systemName: "square.stack.3d.up.fill"),
         tag: 0
     )
+    
+    private let statisticsTabBarItem = UITabBarItem(
+        title: "Статистика",
+        image: UIImage(named: "statistics_NoActive"),
+        tag: 1
+    )
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,9 +23,15 @@ final class TabBarController: UITabBarController {
             servicesAssembly: servicesAssembly
         )
         catalogController.tabBarItem = catalogTabBarItem
+        
+        let statisticsController = StatisticsViewController()
+        statisticsController.tabBarItem = statisticsTabBarItem
+        
+        let statisticsNavController = UINavigationController(rootViewController: statisticsController)
+        statisticsNavController.tabBarItem = statisticsTabBarItem
 
-        viewControllers = [catalogController]
+        viewControllers = [catalogController, statisticsNavController]
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = UIColor(named: "White")
     }
 }
