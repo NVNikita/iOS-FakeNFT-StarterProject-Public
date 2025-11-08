@@ -68,6 +68,7 @@ final class CartViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         setupUI()
         setupTableView()
         setupConstarints()
@@ -75,7 +76,24 @@ final class CartViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        //TODO: - to do nav bar
+        let sortButton = UIBarButtonItem(
+            image: UIImage(named: "sorted_button"),
+            style: .plain,
+            target: self,
+            action: #selector(sortedButtonTap)
+        )
+        sortButton.tintColor = UIColor.blackYP
+        
+        navigationItem.rightBarButtonItem = sortButton
+        
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.shadowColor = .clear
+        appearance.backgroundColor = UIColor.whiteYP
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
     }
     
     private func setupUI() {
@@ -164,6 +182,10 @@ final class CartViewController: UIViewController {
 
     @objc private func backButtonTapped() {
         dismiss(animated: true)
+    }
+    
+    @objc private func sortedButtonTap() {
+        
     }
 }
 

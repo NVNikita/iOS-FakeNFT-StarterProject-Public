@@ -23,12 +23,13 @@ final class TabBarController: UITabBarController {
         )
         
         let cartController = CartViewController()
+        let cartNavigationController = UINavigationController(rootViewController: cartController)
         
         catalogController.tabBarItem = catalogTabBarItem
         
         cartController.tabBarItem = cartItem
 
-        viewControllers = [catalogController, cartController]
+        viewControllers = [catalogController, cartNavigationController]
         
         tabBar.tintColor = .systemBlue
         tabBar.unselectedItemTintColor = UIColor.blackYP
