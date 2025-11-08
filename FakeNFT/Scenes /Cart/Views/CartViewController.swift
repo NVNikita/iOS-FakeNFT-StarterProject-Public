@@ -185,7 +185,31 @@ final class CartViewController: UIViewController {
     }
     
     @objc private func sortedButtonTap() {
+        let alert = UIAlertController(
+            title: "Сортировка",
+            message: nil,
+            preferredStyle: .actionSheet)
         
+        let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { _ in
+            print("priceButtonSort tap")
+        }
+        
+        let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { _ in
+            print("raitingButtonSort tap")
+        }
+        
+        let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { _ in
+            print("nameButtonSort tap")
+        }
+        
+        let closeButton = UIAlertAction(title: "Закрыть", style: .cancel)
+        
+        alert.addAction(priceButtonSort)
+        alert.addAction(raitingButtonSort)
+        alert.addAction(nameButtonSort)
+        alert.addAction(closeButton)
+        
+        self.present(alert, animated: true)
     }
 }
 
