@@ -50,6 +50,7 @@
 		EB1159F42EAE295A00354BB4 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F32EAE294D00354BB4 /* CartViewController.swift */; };
 		EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */; };
 		EB1B5A132EB5019C00ACC517 /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */; };
+		EB658C632EBFA839002D4CE4 /* CurrencyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		EB1159F32EAE294D00354BB4 /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTTableViewCell.swift; sourceTree = "<group>"; };
 		EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
+		EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -409,6 +411,7 @@
 		EB1B5A2D2EB5310000ACC517 /* CollectionViewCells */ = {
 			isa = PBXGroup;
 			children = (
+				EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */,
 			);
 			path = CollectionViewCells;
 			sourceTree = "<group>";
@@ -560,6 +563,7 @@
 				E1A1B9DA2AA01CE400C3AFBC /* TabBarController.swift in Sources */,
 				3F478ED129DB476500F6D39E /* Fonts.swift in Sources */,
 				0C79EE6A2A76DE1000EE90EA /* NftDetailAssembly.swift in Sources */,
+				EB658C632EBFA839002D4CE4 /* CurrencyCollectionViewCell.swift in Sources */,
 				3FC8C39329D246BA0081F015 /* DateFormatters+Presets.swift in Sources */,
 				EB1B5A132EB5019C00ACC517 /* PaymentViewController.swift in Sources */,
 				0CFCB7422A78013E0009A829 /* Nft.swift in Sources */,

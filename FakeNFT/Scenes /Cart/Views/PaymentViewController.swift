@@ -48,9 +48,17 @@ final class PaymentViewController: UIViewController {
         return textView
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero,
+                                              collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.backgroundColor = UIColor.whiteYP
+        return collectionView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupCollectionView()
         setupNavigationBar()
         setupConstaints()
         setupAgreementText()
@@ -61,11 +69,13 @@ final class PaymentViewController: UIViewController {
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = UIColor.whiteYP
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.blackYP,
             .font: UIFont.bold17SFPro
         ]
+        
+        appearance.shadowColor = .clear
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
@@ -102,6 +112,7 @@ final class PaymentViewController: UIViewController {
         view.backgroundColor = UIColor.whiteYP
         
         view.addSubview(footerStackView)
+        view.addSubview(collectionView)
         
         footerStackView.addArrangedSubview(agreementTextView)
         footerStackView.addArrangedSubview(payButton)
@@ -109,10 +120,13 @@ final class PaymentViewController: UIViewController {
         footerStackView.translatesAutoresizingMaskIntoConstraints = false
         payButton.translatesAutoresizingMaskIntoConstraints = false
         agreementTextView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupCollectionView() {
-        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(CurrencyCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
     }
     
     private func setupConstaints() {
@@ -123,7 +137,12 @@ final class PaymentViewController: UIViewController {
             
             payButton.leadingAnchor.constraint(equalTo: footerStackView.leadingAnchor, constant: 20),
             payButton.trailingAnchor.constraint(equalTo: footerStackView.trailingAnchor, constant: -20),
-            payButton.heightAnchor.constraint(equalToConstant: 60)
+            payButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: footerStackView.topAnchor)
         ])
     }
     
@@ -133,7 +152,9 @@ final class PaymentViewController: UIViewController {
 }
 
 extension PaymentViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+    func textView(_ textView: UITextView,
+                  shouldInteractWith URL: URL, in characterRange: NSRange,
+                  interaction: UITextItemInteraction) -> Bool {
         
         let webViewController = WebViewController(url: URL)
         let navigationController = UINavigationController(rootViewController: webViewController)
@@ -141,5 +162,48 @@ extension PaymentViewController: UITextViewDelegate {
         present(navigationController, animated: true)
         
         return false
+    }
+}
+
+extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        8 // MOCK
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CurrencyCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        cell.config(title: "Test", name: "BTC", image: UIImage(named: "test_nft")) //MOCK
+        return cell
+    }
+}
+
+extension PaymentViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.frame.width - 16 - 16 - 7) / 2
+        return CGSize(width: width, height: 46)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
     }
 }
