@@ -148,10 +148,11 @@ final class CartViewController: UIViewController {
     @objc private func payButtonTap() {
         let payVC = PaymentViewController()
         
-        let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.backward"),
-                                     style: .plain,
-                                     target: self,
-                                     action: #selector(backButtonTapped))
+        let backButton = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.backward"),
+            style: .plain,
+            target: self,
+            action: #selector(backButtonTapped))
         backButton.tintColor = UIColor.blackYP
         
         payVC.navigationItem.leftBarButtonItem = backButton
