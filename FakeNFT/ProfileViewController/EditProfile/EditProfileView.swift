@@ -1,4 +1,3 @@
-
 import UIKit
 import Kingfisher
 
@@ -10,6 +9,7 @@ final class EditProfileView: UIView {
     var nameChanged: ((String) -> Void)?
     var infoChanged: ((String) -> Void)?
     var siteChanged: ((String) -> Void)?
+    var onSaveTapped: (() -> Void)?
     
     // MARK: - UI
     
@@ -19,6 +19,8 @@ final class EditProfileView: UIView {
         button.setImage(image, for: .normal)
         button.tintColor = UIColor(named: "YBlackColor")
         button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        button.isHidden = true
+        button.isEnabled = false
         return button
     }()
     
@@ -31,17 +33,16 @@ final class EditProfileView: UIView {
         return imageView
     }()
     
+    // Кнопка поверх аватара — теперь с иконкой камеры
     private lazy var profileAvatarButton: UIButton = {
         let button = UIButton()
         button.layer.cornerRadius = Constants.Layout.profileAvatarButtonCornerRadius
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(avatarImageTapped), for: .touchUpInside)
         button.backgroundColor = UIColor(named: "YBlackColor")?.withAlphaComponent(Constants.Color.avatarButtonBackgroundAlpha)
-        button.setTitle(NSLocalizedString("ChangePhoto", comment: ""), for: .normal)
-        button.titleLabel?.numberOfLines = Constants.Layout.profileAvatarButtonTitleLines
-        button.titleLabel?.textAlignment = .center
-        button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.Font.avatarButtonTitleSize, weight: Constants.Font.avatarButtonTitleWeight)
+        let camera = UIImage(systemName: "camera.fill")
+        button.setImage(camera, for: .normal)
+        button.tintColor = .white
         return button
     }()
     
@@ -114,6 +115,23 @@ final class EditProfileView: UIView {
         return textView
     }()
     
+    private lazy var saveButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle(NSLocalizedString("Сохранить", comment: ""), for: .normal) // ключ используем напрямую
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(named: Constants.Color.saveButtonBackgroundName)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.Font.saveButtonTitleSize, weight: Constants.Font.saveButtonTitleWeight)
+        button.layer.cornerRadius = Constants.Layout.saveButtonCornerRadius
+        button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private let bottomContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+    
     // MARK: - Init
     
     override init(frame: CGRect) {
@@ -127,6 +145,17 @@ final class EditProfileView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    func setChangePhotoButtonVisible(_ visible: Bool) {
+        loadImageButton.isHidden = !visible
+    }
+    
+    // Блокировка нижней кнопки «Сохранить»
+    func setSaveButtonEnabled(_ enabled: Bool) {
+        saveButton.isEnabled = enabled
+        saveButton.alpha = enabled ? 1.0 : Constants.Alpha.disabled
     }
     
     // MARK: - Setup
@@ -146,23 +175,27 @@ final class EditProfileView: UIView {
             userInfoLabel,
             infoTextView,
             userSiteLabel,
-            siteTextView
+            siteTextView,
+            bottomContainer
         ]
         views.forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             addSubview($0)
         }
+        bottomContainer.addSubview(saveButton)
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Constants.Layout.closeButtonTrailing),
-            closeButton.topAnchor.constraint(equalTo: topAnchor, constant: Constants.Layout.closeButtonTop),
-            closeButton.heightAnchor.constraint(equalToConstant: Constants.Layout.buttonSize),
-            closeButton.widthAnchor.constraint(equalToConstant: Constants.Layout.buttonSize),
+            // closeButton скрыт и не влияет на layout
+            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            closeButton.topAnchor.constraint(equalTo: topAnchor, constant: -100),
+            closeButton.heightAnchor.constraint(equalToConstant: 0),
+            closeButton.widthAnchor.constraint(equalToConstant: 0),
             
             profileAvatar.centerXAnchor.constraint(equalTo: centerXAnchor),
-            profileAvatar.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: Constants.Layout.avatarTop),
+            profileAvatar.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Constants.Layout.avatarTop),
             profileAvatar.widthAnchor.constraint(equalToConstant: Constants.Layout.avatarSize),
             profileAvatar.heightAnchor.constraint(equalToConstant: Constants.Layout.avatarSize),
             
@@ -196,7 +229,17 @@ final class EditProfileView: UIView {
             
             siteTextView.topAnchor.constraint(equalTo: userSiteLabel.bottomAnchor, constant: Constants.Layout.textViewTop),
             siteTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.Layout.horizontalPadding),
-            siteTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.Layout.horizontalPadding)
+            siteTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.Layout.horizontalPadding),
+            
+            bottomContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+            bottomContainer.trailingAnchor.constraint(equalTo: trailingAnchor),
+            bottomContainer.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            
+            saveButton.topAnchor.constraint(equalTo: bottomContainer.topAnchor, constant: Constants.Inset.saveButtonTop),
+            saveButton.leadingAnchor.constraint(equalTo: bottomContainer.leadingAnchor, constant: Constants.Inset.saveButtonHorizontal),
+            saveButton.trailingAnchor.constraint(equalTo: bottomContainer.trailingAnchor, constant: -Constants.Inset.saveButtonHorizontal),
+            saveButton.bottomAnchor.constraint(equalTo: bottomContainer.bottomAnchor, constant: -Constants.Inset.saveButtonBottom),
+            saveButton.heightAnchor.constraint(equalToConstant: Constants.Layout.saveButtonHeight)
         ])
     }
     
@@ -236,7 +279,11 @@ final class EditProfileView: UIView {
     }
     
     @objc private func avatarImageTapped() {
-        loadImageButton.isHidden.toggle()
+        avatarTapped?()
+    }
+    
+    @objc private func saveButtonTapped() {
+        onSaveTapped?()
     }
 }
 
@@ -244,23 +291,23 @@ final class EditProfileView: UIView {
 
 extension EditProfileView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
-        if textView === nameTextView {
+        switch textView {
+        case nameTextView:
             nameChanged?(textView.text)
-        } else if textView === infoTextView {
+        case infoTextView:
             infoChanged?(textView.text)
-        } else if textView === siteTextView {
+        case siteTextView:
             siteChanged?(textView.text)
+        default:
+            break
         }
     }
+    
 }
 
 private extension EditProfileView {
     enum Constants {
         enum Layout {
-            static let closeButtonTrailing: CGFloat = -16
-            static let closeButtonTop: CGFloat = 30
-            static let buttonSize: CGFloat = 44
-            
             static let avatarTop: CGFloat = 22
             static let avatarSize: CGFloat = 70
             static let avatarButtonSize: CGFloat = 70
@@ -283,7 +330,8 @@ private extension EditProfileView {
             static let profileAvatarButtonCornerRadius: CGFloat = 35
             static let textViewCornerRadius: CGFloat = 12
             
-            static let profileAvatarButtonTitleLines: Int = 2
+            static let saveButtonCornerRadius: CGFloat = 16
+            static let saveButtonHeight: CGFloat = 60
         }
         
         enum Inset {
@@ -291,6 +339,9 @@ private extension EditProfileView {
             static let textViewLeft: CGFloat = 16
             static let textViewBottom: CGFloat = 11
             static let textViewRight: CGFloat = 16
+            static let saveButtonTop: CGFloat = 8
+            static let saveButtonBottom: CGFloat = 16
+            static let saveButtonHorizontal: CGFloat = 16
         }
         
         enum Font {
@@ -303,12 +354,17 @@ private extension EditProfileView {
             static let loadImageButtonSize: CGFloat = 17
             static let loadImageButtonWeight: UIFont.Weight = .regular
             
-            static let avatarButtonTitleSize: CGFloat = 10
-            static let avatarButtonTitleWeight: UIFont.Weight = .medium
+            static let saveButtonTitleSize: CGFloat = 17
+            static let saveButtonTitleWeight: UIFont.Weight = .bold
         }
         
         enum Color {
             static let avatarButtonBackgroundAlpha: CGFloat = 0.6
+            static let saveButtonBackgroundName: String = "YBlackColor"
+        }
+        
+        enum Alpha {
+            static let disabled: CGFloat = 0.6
         }
         
         enum Keyboard {
@@ -316,4 +372,3 @@ private extension EditProfileView {
         }
     }
 }
-

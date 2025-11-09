@@ -1,4 +1,3 @@
-
 import UIKit
 import Kingfisher
 
@@ -8,6 +7,8 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     // MARK: - Properties
     private let presenter: EditProfileViewOutput
     private lazy var editProfileView = EditProfileView()
+    
+    private var saveBarButtonItem: UIBarButtonItem?
     
     // MARK: - Init
     init(presenter: EditProfileViewOutput) {
@@ -26,15 +27,48 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupNavigationBar()
         wireActions()
         presenter.viewDidLoad()
     }
     
+    // MARK: - Navigation Bar
+    private func setupNavigationBar() {
+        // Не показываем заголовок
+        navigationItem.title = nil
+        navigationController?.navigationBar.tintColor = UIColor(named: "YBlackColor")
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(backButtonTapped)
+        )
+    }
+    
+    @objc private func backButtonTapped() {
+        // Перенос строки после слова «Уверены»
+        let alertTitle = "Уверены,\nчто хотите выйти?"
+        let alert = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Остаться", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Выйти", style: .destructive, handler: { [weak self] _ in
+            guard let self else { return }
+            if let nav = self.navigationController {
+                nav.popViewController(animated: true)
+            } else {
+                self.dismiss(animated: true)
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Wiring
     private func wireActions() {
+        editProfileView.avatarTapped = { [weak self] in
+            self?.presenter.didTapChangeAvatar()
+        }
         
-        editProfileView.closeTapped = { [weak self] in
+        editProfileView.onSaveTapped = { [weak self] in
             guard let self else { return }
             self.presenter.didTapClose(
                 name: self.editProfileView.nameTextView.text,
@@ -42,9 +76,7 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
                 website: self.editProfileView.siteTextView.text
             )
         }
-        editProfileView.avatarTapped = { [weak self] in
-            self?.presenter.didTapChangeAvatar()
-        }
+        
         editProfileView.nameChanged = { [weak self] text in
             self?.presenter.didChangeName(text)
         }
@@ -56,7 +88,7 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
         }
     }
     
-    // MARK: - EditProfileViewInput (реализация протокола)
+    // MARK: - EditProfileViewInput
     func display(profile: EditProfileViewData) {
         editProfileView.nameTextView.text = profile.name
         editProfileView.infoTextView.text = profile.description
@@ -75,7 +107,10 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     }
     
     func setLoading(_ isLoading: Bool) {
+
         view.isUserInteractionEnabled = !isLoading
+        editProfileView.setSaveButtonEnabled(!isLoading)
+        
         if isLoading {
             let indicator = UIActivityIndicatorView(style: .medium)
             indicator.startAnimating()
@@ -94,7 +129,6 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     }
     
     func setChangePhotoButtonVisible(_ visible: Bool) {
-        editProfileView.profileAvatar.isHidden = !visible
+        editProfileView.setChangePhotoButtonVisible(visible)
     }
 }
-

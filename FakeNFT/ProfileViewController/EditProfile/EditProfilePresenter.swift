@@ -1,4 +1,3 @@
-
 import Foundation
 
 // MARK: - View Input/Output
@@ -28,8 +27,6 @@ protocol EditProfileInteractorInput: AnyObject {
     func validateAvatarURL(_ string: String) -> URL?
 }
 
-protocol EditProfileInteractorOutput: AnyObject {}
-
 // MARK: - Router
 
 protocol EditProfileRouterInput: AnyObject {
@@ -55,10 +52,7 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
     
     private let interactor: EditProfileInteractorInput
     private let router: EditProfileRouterInput
-    
-    // Текущее состояние редактируемого профиля
     private var profile: Profile
-    // Черновые значения полей
     private var draftName: String?
     private var draftDescription: String?
     private var draftWebsite: String?
@@ -84,7 +78,6 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         draftDescription = description
         draftWebsite = website
         
-        // Сформировать итоговый профиль
         var updated = profile
         updated.name = draftName
         updated.description = draftDescription
@@ -95,8 +88,6 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         
         view?.setLoading(true)
         
-        // Не перетираем лайки: просим interactor загрузить актуальный профиль,
-        // переносим likes из него, а затем отправляем update
         interactor.loadCurrentProfile { [weak self] result in
             guard let self else { return }
             switch result {
@@ -109,6 +100,7 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
                     self.view?.setLoading(false)
                     switch updateResult {
                     case .success(let savedProfile):
+                        self.profile = savedProfile
                         self.outputDelegate?.didUpdateProfile(savedProfile)
                         self.router.dismiss()
                     case .failure(let error):
@@ -128,7 +120,6 @@ final class EditProfilePresenterImpl: EditProfileViewOutput {
         router.presentAvatarURLPrompt { [weak self] text in
             guard let self else { return }
             guard let text, let url = self.interactor.validateAvatarURL(text) else {
-                // Пустое нажатие «Отмена» игнорируем, а неверный URL покажем ошибку
                 if let text, !text.isEmpty {
                     self.view?.showValidationError(message: NSLocalizedString("InvalidURL", comment: ""))
                 }

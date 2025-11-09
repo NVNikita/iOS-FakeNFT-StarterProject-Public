@@ -5,7 +5,11 @@ final class EditProfileRouterImpl: EditProfileRouterInput {
     weak var viewController: UIViewController?
     
     func dismiss() {
-        viewController?.dismiss(animated: true, completion: nil)
+        if let nav = viewController?.navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            viewController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     func presentAvatarURLPrompt(completion: @escaping (String?) -> Void) {

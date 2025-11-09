@@ -113,8 +113,14 @@ final class ProfileViewController: UIViewController {
         guard let profile = profile else { return }
         let assembly = EditProfileAssembly(servicesAssembly: servicesAssembly, delegate: self)
         let editVC = assembly.build(with: profile)
-        editVC.modalPresentationStyle = .formSheet
-        present(editVC, animated: true, completion: nil)
+        
+        if let nav = navigationController {
+            nav.pushViewController(editVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: editVC)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true, completion: nil)
+        }
     }
     
     private func didTapOnWebsiteLabel(with urlString: String) {
@@ -166,5 +172,3 @@ extension ProfileViewController: EditProfileDelegate {
         }
     }
 }
-
-
