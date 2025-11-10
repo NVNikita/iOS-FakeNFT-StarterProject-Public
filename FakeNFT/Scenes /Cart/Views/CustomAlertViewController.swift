@@ -10,10 +10,8 @@ import UIKit
 class CustomAlertViewController: UIViewController {
     
     private lazy var blurBackground: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .systemThickMaterial)
+        let blurEffect = UIBlurEffect(style: .regular)
         let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.backgroundColor = UIColor.whiteYP.withAlphaComponent(0.1)
-        blurView.alpha = 0.8
         return blurView
     }()
     
@@ -41,6 +39,8 @@ class CustomAlertViewController: UIViewController {
     private lazy var imageNFTView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.layer.cornerRadius = 12
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     
@@ -89,7 +89,11 @@ class CustomAlertViewController: UIViewController {
     }
     
     private func setupUI() {
+        view.backgroundColor = .clear
+        blurBackground.frame = view.bounds
+        blurBackground.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(blurBackground)
+        
         view.addSubview(containerView)
         containerView.addSubview(stackView)
         containerView.addSubview(buttonStackView)
@@ -107,16 +111,10 @@ class CustomAlertViewController: UIViewController {
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         backButton.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        blurBackground.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            blurBackground.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            blurBackground.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            blurBackground.topAnchor.constraint(equalTo: view.topAnchor),
-            blurBackground.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 56),
