@@ -79,7 +79,7 @@ final class UserRatingCell: UITableViewCell {
         selectionStyle = .none
     }
         
-    // MARK: - Constraints (Исправленная версия)
+    // MARK: - Constraints
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             

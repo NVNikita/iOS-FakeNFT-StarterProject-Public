@@ -116,7 +116,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Controller/StatisticsViewController.swift,
+				Models/StatisticsContracts.swift,
 				Models/UserModel.swift,
+				Presenter/StatisticsPresenter.swift,
 				Views/UserRatingCell.swift,
 			);
 			target = 3F68069229CBBAF100B4F915 /* FakeNFT */;
