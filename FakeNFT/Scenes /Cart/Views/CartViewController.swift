@@ -224,6 +224,41 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.backgroundColor = UIColor.white
+        cell.onDeleteButtonTapped = { [weak self] in
+            self?.showDeleteAlert(for: indexPath)
+        }
         return cell
     }
 }
+
+extension CartViewController {
+    private func showDeleteAlert(for indexPath: IndexPath) {
+        let alertVC = CustomAlertViewController()
+        alertVC.modalPresentationStyle = .overFullScreen
+        alertVC.modalTransitionStyle = .crossDissolve
+        
+        let mockImage = UIImage(named: "test_nft")// MOCK
+        alertVC.configure(imageView: mockImage)
+        
+        alertVC.onBackButtonTapped = {
+            print("Вернуться tapped - отмена удаления")
+        }
+        
+        alertVC.onDeleteButtonTapped = { [weak self] in
+            print("Удалить tapped для indexPath: \(indexPath)")
+            self?.performDelete(at: indexPath)
+        }
+        
+        present(alertVC, animated: true)
+    }
+    
+    private func performDelete(at indexPath: IndexPath) {
+        
+    }
+    
+    private func updateUIAfterDeletion() {
+        
+    }
+}
+
+

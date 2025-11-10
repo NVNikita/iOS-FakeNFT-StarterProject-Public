@@ -53,9 +53,11 @@ final class NFTTableViewCell: UITableViewCell {
         button.setImage(UIImage(named: "delete"), for: .normal)
         button.tintColor = .black
         button.backgroundColor = .clear
-        button.addTarget(self, action: #selector(deletedButtonTap), for: .touchUpOutside)
+        button.addTarget(self, action: #selector(deletedButtonTap), for: .touchUpInside)
         return button
     }()
+    
+    var onDeleteButtonTapped: (() -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -142,7 +144,8 @@ final class NFTTableViewCell: UITableViewCell {
         setRating(rating)
     }
     
-    @objc func deletedButtonTap() {
+    @objc private func deletedButtonTap() {
         print("Test tap on deleted button")
+        onDeleteButtonTapped?()
     }
 }

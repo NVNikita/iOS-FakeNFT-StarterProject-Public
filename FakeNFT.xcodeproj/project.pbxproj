@@ -51,6 +51,7 @@
 		EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */; };
 		EB1B5A132EB5019C00ACC517 /* PaymentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */; };
 		EB658C632EBFA839002D4CE4 /* CurrencyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */; };
+		EB658C652EC00143002D4CE4 /* CustomAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -119,6 +120,7 @@
 		EB1159F72EAE5BFF00354BB4 /* NFTTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTTableViewCell.swift; sourceTree = "<group>"; };
 		EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentViewController.swift; sourceTree = "<group>"; };
 		EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
+		EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -384,6 +386,7 @@
 		EB1159F52EAE5BDF00354BB4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */,
 				EB011EBC2EB76CA2006F7CB7 /* WebViewController.swift */,
 				EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */,
 				EB1159F32EAE294D00354BB4 /* CartViewController.swift */,
@@ -578,6 +581,7 @@
 				3F68069729CBBAF100B4F915 /* AppDelegate.swift in Sources */,
 				EB011EBD2EB76CAD006F7CB7 /* WebViewController.swift in Sources */,
 				3F68069929CBBAF100B4F915 /* SceneDelegate.swift in Sources */,
+				EB658C652EC00143002D4CE4 /* CustomAlertViewController.swift in Sources */,
 				0C79EE6C2A76DE2E00EE90EA /* ServicesAssemly.swift in Sources */,
 				0CFCB74E2A7817DC0009A829 /* NftStorage.swift in Sources */,
 				3FC8C39129D2453B0081F015 /* ExamplePutRequest.swift in Sources */,
