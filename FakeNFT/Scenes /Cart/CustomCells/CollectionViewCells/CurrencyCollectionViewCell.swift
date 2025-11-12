@@ -28,6 +28,9 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
     private lazy var imageViewCell: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = UIColor.blackYP
+        imageView.layer.cornerRadius = 6
+        imageView.layer.masksToBounds = true
         return imageView
     }()
     
@@ -75,5 +78,17 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
         self.titleCellLabel.text = title
         self.currencyLabel.text = name
         self.imageViewCell.kf.setImage(with: imageUrl)
+    }
+    
+    func setSelected(_ isSelected: Bool) {
+        UIView.animate(withDuration: 0.2) {
+            if isSelected {
+                self.contentView.layer.borderWidth = 1
+                self.contentView.layer.borderColor = UIColor.blackYP.cgColor
+            } else {
+                self.contentView.layer.borderWidth = 0
+                self.contentView.layer.borderColor = nil
+            }
+        }
     }
 }

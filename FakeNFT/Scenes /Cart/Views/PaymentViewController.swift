@@ -13,7 +13,7 @@ final class PaymentViewController: UIViewController {
     
     private var currencies: [Currency] = []
     private let currencyService: CurrencyServiceProtocol
-    
+    private var selectedCurrencyIndex: Int?
     
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
@@ -172,7 +172,7 @@ final class PaymentViewController: UIViewController {
                     self?.currencies = currencies
                     self?.collectionView.reloadData()
                 case .failure(let error):
-                    return
+                    print("[PaymentViewController] - [func loadCurrencies] - [Error: \(error)]")
                 }
             }
         }
@@ -215,12 +215,30 @@ extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataS
             cell.config(title: currency.title, name: currency.name, imageUrl: imageUrl)
         }
         
+        let isSelected = selectedCurrencyIndex == indexPath.item
+        cell.setSelected(isSelected)
+        
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedCurrency = currencies[indexPath.item]
         print("Selected currency: \(selectedCurrency.title)")
+        
+        if let previousSelectedIndex = selectedCurrencyIndex {
+            let previousIndexPath = IndexPath(item: previousSelectedIndex, section: 0)
+            if let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CurrencyCollectionViewCell {
+                previousCell.setSelected(false)
+            }
+        }
+        
+        selectedCurrencyIndex = indexPath.item
+        if let cell = collectionView.cellForItem(at: indexPath) as? CurrencyCollectionViewCell {
+            cell.setSelected(true)
+        }
+        
+        payButton.isEnabled = true
+        payButton.backgroundColor = UIColor.blackYP
     }
 }
 
