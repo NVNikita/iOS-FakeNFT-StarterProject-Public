@@ -127,10 +127,10 @@ final class NFTTableViewCell: UITableViewCell {
             
             if i < rating {
                 starImageView.image = UIImage(systemName: "star.fill")
-                starImageView.tintColor = .systemYellow
+                starImageView.tintColor = UIColor.yellowYP
             } else {
                 starImageView.image = UIImage(systemName: "star.fill")
-                starImageView.tintColor = .systemGray
+                starImageView.tintColor = UIColor.lightGreyYP
             }
             
             ratingStackView.addArrangedSubview(starImageView)
