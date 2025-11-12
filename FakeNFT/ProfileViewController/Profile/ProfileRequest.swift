@@ -2,11 +2,11 @@
 import Foundation
 
 struct ProfileRequest: NetworkRequest {
-
+    
     var endpoint: URL? {
-
+        
         guard var components = URLComponents(string: RequestConstants.baseURL) else { return nil }
-
+        
         let pathToAppend = "/api/v1/profile/1"
         if let currentPath = components.path.isEmpty ? nil : components.path {
             components.path = currentPath + pathToAppend
@@ -15,13 +15,13 @@ struct ProfileRequest: NetworkRequest {
         }
         return components.url
     }
-
+    
     var dto: Dto? { nil }
 }
 
 struct ProfilePutRequest: NetworkRequest {
     var endpoint: URL? {
- 
+        
         guard var components = URLComponents(string: RequestConstants.baseURL) else { return nil }
         let pathToAppend = "/api/v1/profile/1"
         if let currentPath = components.path.isEmpty ? nil : components.path {
@@ -33,7 +33,7 @@ struct ProfilePutRequest: NetworkRequest {
     }
     var httpMethod: HttpMethod = .put
     var dto: Dto?
-
+    
     init(dto: ProfileDtoObject) {
         self.dto = dto
     }

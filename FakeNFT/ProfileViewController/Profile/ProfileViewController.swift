@@ -3,52 +3,53 @@ import WebKit
 import ProgressHUD
 
 final class ProfileViewController: UIViewController {
-
+    
     // MARK: - Dependencies
-
+    
     private let servicesAssembly: ServicesAssembly
-
+    
     // MARK: - Views
-
+    
     private let profileView = ProfileView()
     private var profile: Profile?
-
+    
     private lazy var editButton: UIButton = {
         let button = UIButton()
         let imageButton = UIImage(named: "Edit")
         button.setImage(imageButton, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(editProfileTapped), for: .touchUpInside)
         button.widthAnchor.constraint(equalToConstant: 44).isActive = true
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         return button
     }()
-
+    
     private lazy var webView: WKWebView = {
         let webView = WKWebView()
         return webView
     }()
-
+    
     // MARK: - Init
-
+    
     init(servicesAssembly: ServicesAssembly) {
         self.servicesAssembly = servicesAssembly
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     // MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view = profileView
         setupEditButton()
         loadProfile()
-
+        
         profileView.websiteLabelTapped = { [weak self] address in
             self?.didTapOnWebsiteLabel(with: address)
         }
@@ -56,9 +57,9 @@ final class ProfileViewController: UIViewController {
             self?.didTapOnWebsiteLabel(with: address)
         }
     }
-
+    
     // MARK: - Setup
-
+    
     private func setupEditButton() {
         view.addSubview(editButton)
         NSLayoutConstraint.activate([
@@ -66,9 +67,9 @@ final class ProfileViewController: UIViewController {
             editButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         ])
     }
-
+    
     // MARK: - Private
-
+    
     private func loadProfile() {
         ProgressHUD.show()
         servicesAssembly.profileService.loadProfile { [weak self] result in
@@ -85,7 +86,7 @@ final class ProfileViewController: UIViewController {
             }
         }
     }
-
+    
     private func showErrorAlert(with error: Error) {
         let alert = UIAlertController(
             title: NSLocalizedString("Error.title", comment: ""),
@@ -107,17 +108,31 @@ final class ProfileViewController: UIViewController {
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
-
+    
+    @objc private func editProfileTapped() {
+        guard let profile = profile else { return }
+        let assembly = EditProfileAssembly(servicesAssembly: servicesAssembly, delegate: self)
+        let editVC = assembly.build(with: profile)
+        
+        if let nav = navigationController {
+            nav.pushViewController(editVC, animated: true)
+        } else {
+            let nav = UINavigationController(rootViewController: editVC)
+            nav.modalPresentationStyle = .fullScreen
+            present(nav, animated: true, completion: nil)
+        }
+    }
+    
     private func didTapOnWebsiteLabel(with urlString: String) {
         var validURLString = urlString
         if !urlString.hasPrefix("https://") {
             validURLString = "https://\(urlString)"
         }
         guard let url = URL(string: validURLString) else { return }
-
+        
         let request = URLRequest(url: url)
         webView.load(request)
-
+        
         let webViewController = UIViewController()
         webViewController.view.addSubview(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -129,5 +144,31 @@ final class ProfileViewController: UIViewController {
         ])
         webViewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(webViewController, animated: true)
+    }
+}
+
+// MARK: - EditProfileDelegate
+
+extension ProfileViewController: EditProfileDelegate {
+    func didUpdateProfile(_ profile: Profile) {
+        self.profile = profile
+        profileView.updateUI(with: profile)
+        let name = profile.name ?? ""
+        let description = profile.description ?? ""
+        let website = profile.website ?? ""
+        let avatar = profile.avatar ?? ""
+        servicesAssembly.profileService.updateProfile(
+            name: name,
+            description: description,
+            website: website,
+            avatar: avatar
+        ) { result in
+            switch result {
+            case .success(let updatedProfile):
+                print("Profile successfully updated: \(updatedProfile)")
+            case .failure(let error):
+                print("Error updating profile: \(error)")
+            }
+        }
     }
 }
