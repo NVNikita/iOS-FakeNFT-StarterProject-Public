@@ -71,9 +71,9 @@ final class CurrencyCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func config(title: String, name: String, image: UIImage?) {
-        self.imageViewCell.image = image
+    func config(title: String, name: String, imageUrl: URL) {
         self.titleCellLabel.text = title
         self.currencyLabel.text = name
+        self.imageViewCell.kf.setImage(with: imageUrl)
     }
 }

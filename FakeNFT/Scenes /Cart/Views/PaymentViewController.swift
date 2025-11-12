@@ -6,8 +6,14 @@
 //
 
 import UIKit
+import Kingfisher
+import ProgressHUD
 
 final class PaymentViewController: UIViewController {
+    
+    private var currencies: [Currency] = []
+    private let currencyService: CurrencyServiceProtocol
+    
     
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
@@ -55,6 +61,15 @@ final class PaymentViewController: UIViewController {
         return collectionView
     }()
     
+    init(currencyService: CurrencyServiceProtocol = CurrencyServiceAssembly.shared.currencyService) {
+        self.currencyService = currencyService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -62,6 +77,7 @@ final class PaymentViewController: UIViewController {
         setupNavigationBar()
         setupConstaints()
         setupAgreementText()
+        loadCurrencies()
     }
     
     private func setupNavigationBar() {
@@ -146,6 +162,22 @@ final class PaymentViewController: UIViewController {
         ])
     }
     
+    private func loadCurrencies() {
+        ProgressHUD.show()
+        currencyService.loadCurrencies { [weak self] result in
+            DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let currencies):
+                    self?.currencies = currencies
+                    self?.collectionView.reloadData()
+                case .failure(let error):
+                    return
+                }
+            }
+        }
+    }
+    
     @objc private func payButtonTap() {
         
     }
@@ -168,7 +200,7 @@ extension PaymentViewController: UITextViewDelegate {
 extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
-        8 // MOCK
+        currencies.count
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -176,8 +208,19 @@ extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CurrencyCollectionViewCell else {
             return UICollectionViewCell()
         }
-        cell.config(title: "Test", name: "BTC", image: UIImage(named: "test_nft")) //MOCK
+        
+        let currency = currencies[indexPath.item]
+        
+        if let imageUrl = URL(string: currency.image) {
+            cell.config(title: currency.title, name: currency.name, imageUrl: imageUrl)
+        }
+        
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedCurrency = currencies[indexPath.item]
+        print("Selected currency: \(selectedCurrency.title)")
     }
 }
 
