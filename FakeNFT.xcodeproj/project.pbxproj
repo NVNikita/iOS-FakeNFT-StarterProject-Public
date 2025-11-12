@@ -58,6 +58,7 @@
 		EBC222592EC4BB2800DA4A0C /* CurrencyStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222582EC4BB2600DA4A0C /* CurrencyStorage.swift */; };
 		EBC2225B2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225A2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift */; };
 		EBC2225D2EC4D86600DA4A0C /* NFTItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225C2EC4D85900DA4A0C /* NFTItem.swift */; };
+		EBC2225F2EC5392C00DA4A0C /* SuccessfulPaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +134,7 @@
 		EBC222582EC4BB2600DA4A0C /* CurrencyStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyStorage.swift; sourceTree = "<group>"; };
 		EBC2225A2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyServiceAssembly.swift; sourceTree = "<group>"; };
 		EBC2225C2EC4D85900DA4A0C /* NFTItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTItem.swift; sourceTree = "<group>"; };
+		EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessfulPaymentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -404,6 +406,7 @@
 		EB1159F52EAE5BDF00354BB4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */,
 				EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */,
 				EB011EBC2EB76CA2006F7CB7 /* WebViewController.swift */,
 				EB1B5A122EB5019400ACC517 /* PaymentViewController.swift */,
@@ -581,6 +584,7 @@
 				EBC2225D2EC4D86600DA4A0C /* NFTItem.swift in Sources */,
 				3FC8C38B29D242E90081F015 /* ProductDetailsTableViewCell.swift in Sources */,
 				3F478ECF29DB474E00F6D39E /* Colors.swift in Sources */,
+				EBC2225F2EC5392C00DA4A0C /* SuccessfulPaymentView.swift in Sources */,
 				0C79EE662A76DDFF00EE90EA /* NftDetailViewController.swift in Sources */,
 				E1A1B9DA2AA01CE400C3AFBC /* TabBarController.swift in Sources */,
 				EBC222572EC4BAF900DA4A0C /* CurrencyRequest.swift in Sources */,
