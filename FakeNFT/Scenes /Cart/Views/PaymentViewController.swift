@@ -14,6 +14,7 @@ final class PaymentViewController: UIViewController {
     private var currencies: [Currency] = []
     private let currencyService: CurrencyServiceProtocol
     private var selectedCurrencyIndex: Int?
+    private let orderId: String?
     
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
@@ -61,7 +62,8 @@ final class PaymentViewController: UIViewController {
         return collectionView
     }()
     
-    init(currencyService: CurrencyServiceProtocol = CurrencyServiceAssembly.shared.currencyService) {
+    init(orderId: String? = nil, currencyService: CurrencyServiceProtocol = CurrencyServiceAssembly.shared.currencyService) {
+        self.orderId = orderId
         self.currencyService = currencyService
         super.init(nibName: nil, bundle: nil)
     }
@@ -178,8 +180,49 @@ final class PaymentViewController: UIViewController {
         }
     }
     
-    @objc private func payButtonTap() {
+    private func showAlertError() {
+        let alert = UIAlertController(title: "Не удалось произвести оплату",
+                                      message: nil,
+                                      preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Отмена", style: .default)
+        let reloadAction = UIAlertAction(title: "Повторить", style: .destructive) { [weak self] _ in
+            self?.loadCurrencies()
+        }
+        alert.addAction(cancelAction)
+        alert.addAction(reloadAction)
+        present(alert, animated: true)
+    }
+    
+    private func payment() {
+        guard let selectedIndex = selectedCurrencyIndex else { return }
         
+        let selectedCurrency = currencies[selectedIndex]
+        ProgressHUD.show()
+        
+        let currentOrderId = orderId ?? "1"
+        
+        currencyService.payOrder(with: selectedCurrency.id, orderId: currentOrderId) { [weak self] result in
+            DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let paymentResult):
+                    if paymentResult.success {
+                        let successVC = SuccessfulPayment()
+                        successVC.modalPresentationStyle = .fullScreen
+                        self?.present(successVC, animated: true)
+                    } else {
+                        self?.showAlertError()
+                    }
+                case .failure(let error):
+                    print("[PaymentViewController] - [func payment] - [Error: \(error)]")
+                    break
+                }
+            }
+        }
+    }
+    
+    @objc private func payButtonTap() {
+        payment()
     }
 }
 

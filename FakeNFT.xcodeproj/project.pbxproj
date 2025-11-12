@@ -59,6 +59,8 @@
 		EBC2225B2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225A2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift */; };
 		EBC2225D2EC4D86600DA4A0C /* NFTItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225C2EC4D85900DA4A0C /* NFTItem.swift */; };
 		EBC2225F2EC5392C00DA4A0C /* SuccessfulPaymentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */; };
+		EBC222612EC5459D00DA4A0C /* PaymentResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222602EC5459C00DA4A0C /* PaymentResult.swift */; };
+		EBC222632EC545CA00DA4A0C /* PaymentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222622EC545C400DA4A0C /* PaymentRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +137,8 @@
 		EBC2225A2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyServiceAssembly.swift; sourceTree = "<group>"; };
 		EBC2225C2EC4D85900DA4A0C /* NFTItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTItem.swift; sourceTree = "<group>"; };
 		EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessfulPaymentView.swift; sourceTree = "<group>"; };
+		EBC222602EC5459C00DA4A0C /* PaymentResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentResult.swift; sourceTree = "<group>"; };
+		EBC222622EC545C400DA4A0C /* PaymentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,6 +352,7 @@
 		3F6806D829CC979D00B4F915 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				EBC222602EC5459C00DA4A0C /* PaymentResult.swift */,
 				EBC2225C2EC4D85900DA4A0C /* NFTItem.swift */,
 				EBC222522EC4BA9B00DA4A0C /* Currency.swift */,
 				0CFCB7412A78013E0009A829 /* Nft.swift */,
@@ -358,6 +363,7 @@
 		3FC8C38F29D245250081F015 /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				EBC222622EC545C400DA4A0C /* PaymentRequest.swift */,
 				EBC222562EC4BAEF00DA4A0C /* CurrencyRequest.swift */,
 				0C79EE622A76DD1900EE90EA /* RequestConstants.swift */,
 				3FC8C39029D2453B0081F015 /* ExamplePutRequest.swift */,
@@ -601,6 +607,7 @@
 				0CFCB7402A78002A0009A829 /* ExamplePutService.swift in Sources */,
 				EBC2225B2EC4BE1000DA4A0C /* CurrencyServiceAssembly.swift in Sources */,
 				3F6806D529CBBEC700B4F915 /* NetworkTask.swift in Sources */,
+				EBC222632EC545CA00DA4A0C /* PaymentRequest.swift in Sources */,
 				0CF2C2DB2A783C1B00FDC837 /* LoadingView.swift in Sources */,
 				558E39E72C68CE0A00FB86AC /* NftService.swift in Sources */,
 				EB1159F82EAE5C1400354BB4 /* NFTTableViewCell.swift in Sources */,
@@ -621,6 +628,7 @@
 				0CF2C2E12A784C7000FDC837 /* LinePageControl.swift in Sources */,
 				3F6806D329CBBE9600B4F915 /* NetworkRequest.swift in Sources */,
 				0CFCB7492A7808900009A829 /* TestCatalogController.swift in Sources */,
+				EBC222612EC5459D00DA4A0C /* PaymentResult.swift in Sources */,
 				EB1159F42EAE295A00354BB4 /* CartViewController.swift in Sources */,
 				3F6806D129CBBE6B00B4F915 /* NetworkClient.swift in Sources */,
 				0CFCB7442A7802440009A829 /* NftDetailInput.swift in Sources */,

@@ -9,6 +9,7 @@ import Foundation
 
 protocol CurrencyServiceProtocol {
     func loadCurrencies(completion: @escaping (Result<Currencies, Error>) -> Void)
+    func payOrder(with currencyId: String, orderId: String, completion: @escaping (Result<PaymentResult, Error>) -> Void)
 }
 
 final class CurrencyService: CurrencyServiceProtocol {
@@ -29,6 +30,19 @@ final class CurrencyService: CurrencyServiceProtocol {
             case .success(let currencies):
                 self?.storage.saveCurrencies(currencies)
                 completion(.success(currencies))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    func payOrder(with currencyId: String, orderId: String, completion: @escaping (Result<PaymentResult, Error>) -> Void) {
+        let request = PaymentRequest(currencyId: currencyId, orderId: orderId)
+        
+        networkClient.send(request: request, type: PaymentResult.self) { result in
+            switch result {
+            case .success(let paymentResult):
+                completion(.success(paymentResult))
             case .failure(let error):
                 completion(.failure(error))
             }
