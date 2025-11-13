@@ -16,16 +16,26 @@ final class PaymentViewController: UIViewController {
     private var selectedCurrencyIndex: Int?
     private let orderId: String?
     
+    private enum Constants {
+        static let spacing: CGFloat = 16
+        static let cornerRadius12: CGFloat = 12
+        static let cornerRadius16: CGFloat = 16
+        
+        static let buttonText: String = "Оплатить"
+        static let navTitle: String = "Выберите способ оплаты"
+        static let agreementText: String = "Совершая покупку, вы соглашаетесь с условиями Политики конфиденциальности"
+    }
+    
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.alignment = .fill
-        stackView.spacing = 16
+        stackView.spacing = Constants.spacing
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layer.masksToBounds = true
-        stackView.layer.cornerRadius = 12
+        stackView.layer.cornerRadius = Constants.cornerRadius12
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         stackView.backgroundColor = UIColor.lightGreyYP
         return stackView
@@ -33,12 +43,12 @@ final class PaymentViewController: UIViewController {
     
     private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Оплатить", for: .normal)
+        button.setTitle(Constants.buttonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = UIColor.blackYP
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = Constants.cornerRadius16
         button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
         return button
     }()
@@ -83,7 +93,7 @@ final class PaymentViewController: UIViewController {
     }
     
     private func setupNavigationBar() {
-        title = "Выберите способ оплаты"
+        title = Constants.navTitle
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
@@ -103,7 +113,7 @@ final class PaymentViewController: UIViewController {
     }
     
     private func setupAgreementText() {
-        let agreementText = "Совершая покупку, вы соглашаетесь с условиями Политики конфиденциальности"
+        let agreementText = Constants.agreementText
         
         let attributedString = NSMutableAttributedString(string: agreementText)
         

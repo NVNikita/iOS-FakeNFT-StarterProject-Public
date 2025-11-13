@@ -9,6 +9,15 @@ import UIKit
 
 final class SuccessfulPayment: UIViewController {
     
+    private enum Constants {
+        static let cornerRadius16: CGFloat = 16
+        
+        static let messageTitle: String = "Успех! Оплата прошла,\nпоздравляем с покупкой!"
+        static let buttonText: String = "Вернуться в корзину"
+        
+        static let numberOfLines: Int = 0
+    }
+    
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         let image = UIImage(named: "successful_payment_png")
@@ -19,21 +28,21 @@ final class SuccessfulPayment: UIViewController {
     
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
-        label.text = "Успех! Оплата прошла,\nпоздравляем с покупкой!"
+        label.text = Constants.messageTitle
         label.font = UIFont.bold22SFPro
         label.textColor = UIColor.blackYP
-        label.numberOfLines = 0
+        label.numberOfLines = Constants.numberOfLines
         label.textAlignment = .center
         return label
     }()
     
     private lazy var cartButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Вернуться в корзину", for: .normal)
+        button.setTitle(Constants.buttonText, for: .normal)
         button.setTitleColor(UIColor.whiteYP, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = UIColor.blackYP
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = Constants.cornerRadius16
         button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(cartButtonTap), for: .touchUpInside)
         return button

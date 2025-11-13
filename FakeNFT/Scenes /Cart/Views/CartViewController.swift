@@ -15,6 +15,17 @@ final class CartViewController: UIViewController {
         NFTItem(id: "3", name: "NFT 3", price: "1,18 ETH", rating: 5, image: UIImage(named: "test_nft"))
     ]
     
+    private enum Constants {
+        static let cornerRadius12: CGFloat = 12
+        static let cornerRadius16: CGFloat = 16
+        static let spacing: CGFloat = 16
+        
+        static let buttonTitle: String = "К оплате"
+        static let placeHolderText: String = "Корзина пуста"
+        
+        static let numberOfLinesTitles: Int = 1
+    }
+    
     private lazy var nftTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -28,9 +39,9 @@ final class CartViewController: UIViewController {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
-        stackView.spacing = 16
+        stackView.spacing = Constants.spacing
         stackView.layer.masksToBounds = true
-        stackView.layer.cornerRadius = 12
+        stackView.layer.cornerRadius = Constants.cornerRadius12
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         stackView.backgroundColor = UIColor.yaLightGrayLight
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -42,7 +53,7 @@ final class CartViewController: UIViewController {
         label.text = "3 NFT"
         label.font = UIFont.regular15SFPro
         label.textColor = UIColor.blackYP
-        label.numberOfLines = 1
+        label.numberOfLines = Constants.numberOfLinesTitles
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -52,20 +63,20 @@ final class CartViewController: UIViewController {
         label.text = "3,54 ETH"
         label.textColor = UIColor.greenYP
         label.font = UIFont.bold17SFPro
-        label.numberOfLines = 1
+        label.numberOfLines = Constants.numberOfLinesTitles
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("К оплате", for: .normal)
+        button.setTitle(Constants.buttonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = UIColor.blackYP
         button.titleLabel?.textAlignment = .center
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = Constants.cornerRadius16
         button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -73,10 +84,10 @@ final class CartViewController: UIViewController {
     
     private lazy var placeholderTitle: UILabel = {
         let label = UILabel()
-        label.text = "Корзина пуста"
+        label.text = Constants.placeHolderText
         label.font = UIFont.bold17SFPro
         label.textColor = UIColor.blackYP
-        label.numberOfLines = 1
+        label.numberOfLines = Constants.numberOfLinesTitles
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
