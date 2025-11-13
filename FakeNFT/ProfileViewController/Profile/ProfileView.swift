@@ -3,9 +3,10 @@ import Kingfisher
 
 final class ProfileView: UIView {
     
+    private let likesStorage = LikesStorageImpl.shared
     private var nftsCount: Int = Constraints.initialNFTsCount
     private var likesCount: Int = 0
-    
+
     // MARK: - Public Callbacks (для контроллера)
     var websiteLabelTapped: ((String) -> Void)?
     var favoritesTapped: (() -> Void)?
@@ -85,12 +86,10 @@ final class ProfileView: UIView {
     }
     
     private func addSubviews() {
-        
         [profileContainerView, profileTableView].forEach {
             addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        
         [profileAvatar, userNameLabel, profileInfoLabel, userWebSiteLabel].forEach {
             profileContainerView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -110,7 +109,7 @@ final class ProfileView: UIView {
             
             userNameLabel.centerYAnchor.constraint(equalTo: profileAvatar.centerYAnchor),
             userNameLabel.leadingAnchor.constraint(equalTo: profileAvatar.trailingAnchor, constant: Constraints.nameToAvatarSpacing),
-            
+                 
             profileInfoLabel.topAnchor.constraint(equalTo: profileAvatar.bottomAnchor, constant: Constraints.infoTopSpacing),
             profileInfoLabel.leadingAnchor.constraint(equalTo: profileContainerView.leadingAnchor),
             profileInfoLabel.trailingAnchor.constraint(equalTo: profileContainerView.trailingAnchor),
@@ -155,10 +154,17 @@ final class ProfileView: UIView {
         
         profileInfoLabel.text = profile.description ?? NSLocalizedString("NoInformation", comment: "")
         
+        self.nftsCount = profile.nfts.count
+        self.likesCount = profile.likes.count
         
         profileTableView.reloadData()
     }
     
+    func updateLikesCountAndUI() {
+        let likes = likesStorage.getAllLikes()
+        likesCount = likes.count
+        profileTableView.reloadData()
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -169,7 +175,7 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileCell", for: indexPath)
         
         switch indexPath.row {

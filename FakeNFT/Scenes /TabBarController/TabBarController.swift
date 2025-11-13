@@ -1,10 +1,10 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
-    
     let servicesAssembly = ServicesAssembly(
            networkClient: DefaultNetworkClient(),
-           nftStorage: NftStorageImpl()
+           nftStorage: NftStorageImpl(),
+           myNftStorage: MyNftStorageImpl()
        )
     
     private let catalogTabBarItem = UITabBarItem(
@@ -23,16 +23,15 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         
         let profileViewController = ProfileViewController(servicesAssembly: servicesAssembly)
-        profileViewController.tabBarItem = profileTabBarItem
-        let profileNavController = UINavigationController(rootViewController: profileViewController)
+              profileViewController.tabBarItem = profileTabBarItem
+              let profileNavController = UINavigationController(rootViewController: profileViewController)
         
         let catalogController = TestCatalogViewController(
             servicesAssembly: servicesAssembly
         )
         catalogController.tabBarItem = catalogTabBarItem
 
-        // ВАЖНО: добавляем именно profileNavController, чтобы push работал
-        viewControllers = [catalogController, profileNavController]
+        viewControllers = [catalogController,profileNavController]
 
         view.backgroundColor = .systemBackground
     }
