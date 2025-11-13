@@ -77,8 +77,6 @@ final class SuccessfulPayment: UIViewController {
     }
     
     @objc private func cartButtonTap() {
-        let cartVC = CartViewController()
-        cartVC.modalPresentationStyle = .fullScreen
-        present(cartVC, animated: true)
+        //TODO: add cart transition logic
     }
 }
