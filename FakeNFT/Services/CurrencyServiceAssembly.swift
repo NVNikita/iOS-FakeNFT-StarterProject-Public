@@ -7,8 +7,8 @@
 
 import Foundation
 
-final class CurrencyServiceAssembly {
-    static let shared = CurrencyServiceAssembly()
+final class CurrencyServiceProvider {
+    static let shared = CurrencyServiceProvider()
     
     private let networkClient: NetworkClient
     private let storage: CurrencyStorageProtocol

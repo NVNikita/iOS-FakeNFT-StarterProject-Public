@@ -72,7 +72,7 @@ final class PaymentViewController: UIViewController {
         return collectionView
     }()
     
-    init(orderId: String? = nil, currencyService: CurrencyServiceProtocol = CurrencyServiceAssembly.shared.currencyService) {
+    init(orderId: String? = nil, currencyService: CurrencyServiceProtocol = CurrencyServiceProvider.shared.currencyService) {
         self.orderId = orderId
         self.currencyService = currencyService
         super.init(nibName: nil, bundle: nil)
@@ -184,20 +184,26 @@ final class PaymentViewController: UIViewController {
                     self?.currencies = currencies
                     self?.collectionView.reloadData()
                 case .failure(let error):
-                    print("[PaymentViewController] - [func loadCurrencies] - [Error: \(error)]")
+                    self?.showAlertError(message: "Не удалось загрузить валюты") { [weak self] in
+                        self?.loadCurrencies()
+                        print("[PaymentViewController] - [func loadCurrencies] - [Error: \(error)]")
+                    }
                 }
             }
         }
     }
     
-    private func showAlertError() {
-        let alert = UIAlertController(title: "Не удалось произвести оплату",
-                                      message: nil,
-                                      preferredStyle: .alert)
+    private func showAlertError(message: String, retryAction: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: message,
+            message: nil,
+            preferredStyle: .alert)
+        
         let cancelAction = UIAlertAction(title: "Отмена", style: .default)
-        let reloadAction = UIAlertAction(title: "Повторить", style: .destructive) { [weak self] _ in
-            self?.loadCurrencies()
+        let reloadAction = UIAlertAction(title: "Повторить", style: .destructive) { _ in
+            retryAction()
         }
+        
         alert.addAction(cancelAction)
         alert.addAction(reloadAction)
         present(alert, animated: true)
@@ -221,7 +227,9 @@ final class PaymentViewController: UIViewController {
                         successVC.modalPresentationStyle = .fullScreen
                         self?.present(successVC, animated: true)
                     } else {
-                        self?.showAlertError()
+                        self?.showAlertError(message: "Не удалось произвести оплату") { [weak self] in
+                            self?.payment()
+                        }
                     }
                 case .failure(let error):
                     print("[PaymentViewController] - [func payment] - [Error: \(error)]")
