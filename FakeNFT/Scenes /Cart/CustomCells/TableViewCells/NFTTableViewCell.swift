@@ -9,7 +9,7 @@ import UIKit
 
 final class NFTTableViewCell: UITableViewCell {
     
-    lazy var imageNFT: UIImageView = {
+    private lazy var imageNFT: UIImageView = {
         let imageNFT = UIImageView()
         imageNFT.contentMode = .scaleAspectFit
         imageNFT.layer.masksToBounds = true
@@ -17,14 +17,14 @@ final class NFTTableViewCell: UITableViewCell {
         return imageNFT
     }()
     
-    lazy var nameNFTLabel: UILabel = {
+    private lazy var nameNFTLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.bold17SFPro
         label.textColor = .black
         return label
     }()
     
-    lazy var ratingStackView: UIStackView = {
+    private lazy var ratingStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.spacing = 2
@@ -33,7 +33,7 @@ final class NFTTableViewCell: UITableViewCell {
         return stack
     }()
     
-    lazy var priceTitleLabel: UILabel = {
+    private lazy var priceTitleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.regular13SFPro
         label.textColor = .black
@@ -41,21 +41,23 @@ final class NFTTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var priceLabel: UILabel = {
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.bold17SFPro
         label.textColor = .black
         return label
     }()
     
-    lazy var deletedButton: UIButton = {
+    private lazy var deletedButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "delete"), for: .normal)
         button.tintColor = .black
         button.backgroundColor = .clear
-        button.addTarget(self, action: #selector(deletedButtonTap), for: .touchUpOutside)
+        button.addTarget(self, action: #selector(deletedButtonTap), for: .touchUpInside)
         return button
     }()
+    
+    var onDeleteButtonTapped: (() -> Void)?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -125,10 +127,10 @@ final class NFTTableViewCell: UITableViewCell {
             
             if i < rating {
                 starImageView.image = UIImage(systemName: "star.fill")
-                starImageView.tintColor = .systemYellow
+                starImageView.tintColor = UIColor.yellowYP
             } else {
                 starImageView.image = UIImage(systemName: "star.fill")
-                starImageView.tintColor = .systemGray
+                starImageView.tintColor = UIColor.lightGreyYP
             }
             
             ratingStackView.addArrangedSubview(starImageView)
@@ -142,7 +144,8 @@ final class NFTTableViewCell: UITableViewCell {
         setRating(rating)
     }
     
-    @objc func deletedButtonTap() {
+    @objc private func deletedButtonTap() {
         print("Test tap on deleted button")
+        onDeleteButtonTapped?()
     }
 }

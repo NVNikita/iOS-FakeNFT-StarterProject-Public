@@ -6,19 +6,36 @@
 //
 
 import UIKit
+import Kingfisher
+import ProgressHUD
 
 final class PaymentViewController: UIViewController {
+    
+    private var currencies: [Currency] = []
+    private let currencyService: CurrencyServiceProtocol
+    private var selectedCurrencyIndex: Int?
+    private let orderId: String?
+    
+    private enum Constants {
+        static let spacing: CGFloat = 16
+        static let cornerRadius12: CGFloat = 12
+        static let cornerRadius16: CGFloat = 16
+        
+        static let buttonText: String = "Оплатить"
+        static let navTitle: String = "Выберите способ оплаты"
+        static let agreementText: String = "Совершая покупку, вы соглашаетесь с условиями Политики конфиденциальности"
+    }
     
     private lazy var footerStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.alignment = .fill
-        stackView.spacing = 16
+        stackView.spacing = Constants.spacing
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layer.masksToBounds = true
-        stackView.layer.cornerRadius = 12
+        stackView.layer.cornerRadius = Constants.cornerRadius12
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         stackView.backgroundColor = UIColor.lightGreyYP
         return stackView
@@ -26,12 +43,12 @@ final class PaymentViewController: UIViewController {
     
     private lazy var payButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Оплатить", for: .normal)
+        button.setTitle(Constants.buttonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
         button.backgroundColor = UIColor.blackYP
         button.layer.masksToBounds = true
-        button.layer.cornerRadius = 16
+        button.layer.cornerRadius = Constants.cornerRadius16
         button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
         return button
     }()
@@ -48,24 +65,45 @@ final class PaymentViewController: UIViewController {
         return textView
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero,
+                                              collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.backgroundColor = UIColor.whiteYP
+        return collectionView
+    }()
+    
+    init(orderId: String? = nil, currencyService: CurrencyServiceProtocol = CurrencyServiceProvider.shared.currencyService) {
+        self.orderId = orderId
+        self.currencyService = currencyService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupCollectionView()
         setupNavigationBar()
         setupConstaints()
         setupAgreementText()
+        loadCurrencies()
     }
     
     private func setupNavigationBar() {
-        title = "Выберите способ оплаты"
+        title = Constants.navTitle
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = .white
+        appearance.backgroundColor = UIColor.whiteYP
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.blackYP,
             .font: UIFont.bold17SFPro
         ]
+        
+        appearance.shadowColor = .clear
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
@@ -75,7 +113,7 @@ final class PaymentViewController: UIViewController {
     }
     
     private func setupAgreementText() {
-        let agreementText = "Совершая покупку, вы соглашаетесь с условиями Политики конфиденциальности"
+        let agreementText = Constants.agreementText
         
         let attributedString = NSMutableAttributedString(string: agreementText)
         
@@ -102,6 +140,7 @@ final class PaymentViewController: UIViewController {
         view.backgroundColor = UIColor.whiteYP
         
         view.addSubview(footerStackView)
+        view.addSubview(collectionView)
         
         footerStackView.addArrangedSubview(agreementTextView)
         footerStackView.addArrangedSubview(payButton)
@@ -109,10 +148,13 @@ final class PaymentViewController: UIViewController {
         footerStackView.translatesAutoresizingMaskIntoConstraints = false
         payButton.translatesAutoresizingMaskIntoConstraints = false
         agreementTextView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupCollectionView() {
-        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(CurrencyCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
     }
     
     private func setupConstaints() {
@@ -123,17 +165,89 @@ final class PaymentViewController: UIViewController {
             
             payButton.leadingAnchor.constraint(equalTo: footerStackView.leadingAnchor, constant: 20),
             payButton.trailingAnchor.constraint(equalTo: footerStackView.trailingAnchor, constant: -20),
-            payButton.heightAnchor.constraint(equalToConstant: 60)
+            payButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: footerStackView.topAnchor)
         ])
     }
     
-    @objc private func payButtonTap() {
+    private func loadCurrencies() {
+        ProgressHUD.show()
+        currencyService.loadCurrencies { [weak self] result in
+            DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let currencies):
+                    self?.currencies = currencies
+                    self?.collectionView.reloadData()
+                case .failure(let error):
+                    self?.showAlertError(message: "Не удалось загрузить валюты") { [weak self] in
+                        self?.loadCurrencies()
+                        print("[PaymentViewController] - [func loadCurrencies] - [Error: \(error)]")
+                    }
+                }
+            }
+        }
+    }
+    
+    private func showAlertError(message: String, retryAction: @escaping () -> Void) {
+        let alert = UIAlertController(
+            title: message,
+            message: nil,
+            preferredStyle: .alert)
         
+        let cancelAction = UIAlertAction(title: "Отмена", style: .default)
+        let reloadAction = UIAlertAction(title: "Повторить", style: .destructive) { _ in
+            retryAction()
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(reloadAction)
+        present(alert, animated: true)
+    }
+    
+    private func payment() {
+        guard let selectedIndex = selectedCurrencyIndex else { return }
+        
+        let selectedCurrency = currencies[selectedIndex]
+        ProgressHUD.show()
+        
+        let currentOrderId = orderId ?? "1"
+        
+        currencyService.payOrder(with: selectedCurrency.id, orderId: currentOrderId) { [weak self] result in
+            DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+                switch result {
+                case .success(let paymentResult):
+                    if paymentResult.success {
+                        let successVC = SuccessfulPayment()
+                        successVC.modalPresentationStyle = .fullScreen
+                        self?.present(successVC, animated: true)
+                    } else {
+                        self?.showAlertError(message: "Не удалось произвести оплату") { [weak self] in
+                            self?.payment()
+                        }
+                    }
+                case .failure(let error):
+                    print("[PaymentViewController] - [func payment] - [Error: \(error)]")
+                    break
+                }
+            }
+        }
+    }
+    
+    @objc private func payButtonTap() {
+        payment()
     }
 }
 
 extension PaymentViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+    func textView(_ textView: UITextView,
+                  shouldInteractWith URL: URL, in characterRange: NSRange,
+                  interaction: UITextItemInteraction) -> Bool {
         
         let webViewController = WebViewController(url: URL)
         let navigationController = UINavigationController(rootViewController: webViewController)
@@ -141,5 +255,77 @@ extension PaymentViewController: UITextViewDelegate {
         present(navigationController, animated: true)
         
         return false
+    }
+}
+
+extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        currencies.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? CurrencyCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        
+        let currency = currencies[indexPath.item]
+        
+        if let imageUrl = URL(string: currency.image) {
+            cell.config(title: currency.title, name: currency.name, imageUrl: imageUrl)
+        }
+        
+        let isSelected = selectedCurrencyIndex == indexPath.item
+        cell.setSelected(isSelected)
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedCurrency = currencies[indexPath.item]
+        print("Selected currency: \(selectedCurrency.title)")
+        
+        if let previousSelectedIndex = selectedCurrencyIndex {
+            let previousIndexPath = IndexPath(item: previousSelectedIndex, section: 0)
+            if let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CurrencyCollectionViewCell {
+                previousCell.setSelected(false)
+            }
+        }
+        
+        selectedCurrencyIndex = indexPath.item
+        if let cell = collectionView.cellForItem(at: indexPath) as? CurrencyCollectionViewCell {
+            cell.setSelected(true)
+        }
+        
+        payButton.isEnabled = true
+        payButton.backgroundColor = UIColor.blackYP
+    }
+}
+
+extension PaymentViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = (collectionView.frame.width - 16 - 16 - 7) / 2
+        return CGSize(width: width, height: 46)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
+    }
+    
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 7
     }
 }
