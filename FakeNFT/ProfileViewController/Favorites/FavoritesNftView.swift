@@ -15,7 +15,7 @@ final class FavoritesNftView: UIView {
         label.text = NSLocalizedString("noFavoritesNFTs", comment: "")
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 17)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

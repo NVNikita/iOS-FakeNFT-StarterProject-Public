@@ -27,7 +27,7 @@ final class ProfileView: UIView {
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Mock Name"
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = FontStyle.title
         return label
     }()
@@ -48,7 +48,7 @@ final class ProfileView: UIView {
     private lazy var profileInfoLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("NoInformation", comment: "")
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = FontStyle.info
         label.numberOfLines = Constraints.infoNumberOfLines
         label.lineBreakMode = .byWordWrapping
@@ -190,7 +190,7 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.textLabel?.font = FontStyle.cellTitle
-        cell.textLabel?.textColor = UIColor(named: "YBlackColor")
+        cell.textLabel?.textColor = UIColor(resource: .yBlack)
         
         let chevronImage = UIImage(
             systemName: "chevron.forward",
@@ -203,7 +203,7 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         let chevronImageView = UIImageView(image: chevronImage)
         
         cell.accessoryView = chevronImageView
-        cell.tintColor = UIColor(named: "YBlackColor")
+        cell.tintColor = UIColor(resource: .yBlack)
         cell.selectionStyle = .none
         return cell
     }

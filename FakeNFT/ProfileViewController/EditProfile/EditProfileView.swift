@@ -17,7 +17,7 @@ final class EditProfileView: UIView {
         let button = UIButton(type: .system)
         let image = UIImage(named: "close")
         button.setImage(image, for: .normal)
-        button.tintColor = UIColor(named: "YBlackColor")
+        button.tintColor = UIColor(resource: .yBlack)
         button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         button.isHidden = true
         button.isEnabled = false
@@ -39,7 +39,7 @@ final class EditProfileView: UIView {
         button.layer.cornerRadius = Constants.Layout.profileAvatarButtonCornerRadius
         button.clipsToBounds = true
         button.addTarget(self, action: #selector(avatarImageTapped), for: .touchUpInside)
-        button.backgroundColor = UIColor(named: "YBlackColor")?.withAlphaComponent(Constants.Color.avatarButtonBackgroundAlpha)
+        button.backgroundColor = UIColor(resource: .yBlack).withAlphaComponent(Constants.Color.avatarButtonBackgroundAlpha)
         let camera = UIImage(systemName: "camera.fill")
         button.setImage(camera, for: .normal)
         button.tintColor = .white
@@ -51,7 +51,7 @@ final class EditProfileView: UIView {
         button.frame = CGRect(x: 0, y: 0, width: Constants.Layout.loadImageButtonFrameWidth, height: Constants.Layout.loadImageButtonFrameHeight)
         button.isHidden = true
         button.setTitle(NSLocalizedString("LoadImage", comment: ""), for: .normal)
-        button.setTitleColor(UIColor(named: "YBlackColor"), for: .normal)
+        button.setTitleColor(UIColor(resource: .yBlack), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.Font.loadImageButtonSize, weight: Constants.Font.loadImageButtonWeight)
         button.backgroundColor = .clear
         button.addTarget(self, action: #selector(loadImageButtonTapped), for: .touchUpInside)
@@ -61,7 +61,7 @@ final class EditProfileView: UIView {
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("Name", comment: "")
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = UIFont.systemFont(ofSize: Constants.Font.sectionTitleSize, weight: Constants.Font.sectionTitleWeight)
         return label
     }()
@@ -80,7 +80,7 @@ final class EditProfileView: UIView {
     private lazy var userInfoLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("Description", comment: "")
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = UIFont.systemFont(ofSize: Constants.Font.sectionTitleSize, weight: Constants.Font.sectionTitleWeight)
         return label
     }()
@@ -99,7 +99,7 @@ final class EditProfileView: UIView {
     private lazy var userSiteLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("WebSite", comment: "")
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = UIFont.systemFont(ofSize: Constants.Font.sectionTitleSize, weight: Constants.Font.sectionTitleWeight)
         return label
     }()
@@ -119,7 +119,7 @@ final class EditProfileView: UIView {
         let button = UIButton(type: .system)
         button.setTitle(NSLocalizedString("Сохранить", comment: ""), for: .normal) // ключ используем напрямую
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(named: Constants.Color.saveButtonBackgroundName)
+        button.backgroundColor = UIColor(resource: .yBlack)
         button.titleLabel?.font = UIFont.systemFont(ofSize: Constants.Font.saveButtonTitleSize, weight: Constants.Font.saveButtonTitleWeight)
         button.layer.cornerRadius = Constants.Layout.saveButtonCornerRadius
         button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)

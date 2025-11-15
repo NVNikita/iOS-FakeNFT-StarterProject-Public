@@ -29,7 +29,7 @@ final class NFTCell: UITableViewCell {
     private lazy var nftNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -57,7 +57,7 @@ final class NFTCell: UITableViewCell {
     private lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -74,12 +74,12 @@ final class NFTCell: UITableViewCell {
         let priceTitleLabel = UILabel()
         priceTitleLabel.text = NSLocalizedString("Price", comment: "")
         priceTitleLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        priceTitleLabel.textColor = UIColor(named: "YBlackColor")
+        priceTitleLabel.textColor = UIColor(resource: .yBlack)
         stackView.addArrangedSubview(priceTitleLabel)
         
         let priceLabel = UILabel()
         priceLabel.font = UIFont.systemFont(ofSize: 17, weight: .bold)
-        priceLabel.textColor = UIColor(named: "YBlackColor")
+        priceLabel.textColor = UIColor(resource: .yBlack)
         priceLabel.text = "0.0"
         self.priceLabel = priceLabel
         stackView.addArrangedSubview(priceLabel)

@@ -28,7 +28,7 @@ final class NFTCollectionCell: UICollectionViewCell {
     private lazy var nftNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13, weight: .bold)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.numberOfLines = 1
         return label
     }()
@@ -48,7 +48,7 @@ final class NFTCollectionCell: UICollectionViewCell {
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         return label
     }()
     

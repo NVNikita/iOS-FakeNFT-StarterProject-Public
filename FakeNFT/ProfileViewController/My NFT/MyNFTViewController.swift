@@ -46,7 +46,7 @@ final class MyNFTViewController: UIViewController {
     // MARK: - Навигация (Эпик 3)
     private func setupNavigationBar() {
         title = NSLocalizedString("MyNFT", comment: "")
-        navigationController?.navigationBar.tintColor = UIColor(named: "YBlackColor")
+        navigationController?.navigationBar.tintColor = UIColor(resource: .yBlack)
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,

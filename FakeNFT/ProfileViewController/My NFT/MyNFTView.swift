@@ -30,7 +30,7 @@ final class MyNFTView: UIView {
         label.text = NSLocalizedString("noNFTs", comment: "")
         label.textAlignment = .center
         label.font = UIFont.boldSystemFont(ofSize: 17)
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.isHidden = true
         return label
