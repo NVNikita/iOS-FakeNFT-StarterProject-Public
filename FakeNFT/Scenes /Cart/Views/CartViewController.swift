@@ -9,11 +9,13 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
-    private var nftItems: [NFTItem] = [
-        NFTItem(id: "1", name: "NFT 1", price: "1,18 ETH", rating: 3, image: UIImage(named: "test_nft")),
-        NFTItem(id: "2", name: "NFT 2", price: "1,18 ETH", rating: 1, image: UIImage(named: "test_nft")),
-        NFTItem(id: "3", name: "NFT 3", price: "1,18 ETH", rating: 5, image: UIImage(named: "test_nft"))
-    ]
+    private let cartService = CartService.shared
+    
+    private var nftItems: [NFTItem] {
+        return cartService.getNFTs()
+    }
+    
+    private var cartUpdateObserver: NSObjectProtocol?
     
     private enum Constants {
         static let cornerRadius12: CGFloat = 12
@@ -50,7 +52,6 @@ final class CartViewController: UIViewController {
     
     private lazy var nftCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "3 NFT"
         label.font = UIFont.regular15SFPro
         label.textColor = UIColor.blackYP
         label.numberOfLines = Constants.numberOfLinesTitles
@@ -60,7 +61,6 @@ final class CartViewController: UIViewController {
     
     private lazy var priceNFTLabel: UILabel = {
         let label = UILabel()
-        label.text = "3,54 ETH"
         label.textColor = UIColor.greenYP
         label.font = UIFont.bold17SFPro
         label.numberOfLines = Constants.numberOfLinesTitles
@@ -99,7 +99,13 @@ final class CartViewController: UIViewController {
         setupUI()
         setupTableView()
         setupConstraints()
-        updateUIAfterDeletion()
+        setupCartObserver()
+        updateUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateUI()
     }
     
     private func setupNavigationBar() {
@@ -138,6 +144,16 @@ final class CartViewController: UIViewController {
         nftTableView.delegate = self
         nftTableView.dataSource = self
         nftTableView.register(NFTTableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    private func setupCartObserver() {
+        cartUpdateObserver = NotificationCenter.default.addObserver(
+            forName: .cartDidUpdate,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateUI()
+        }
     }
     
     private func setupConstraints() {
@@ -184,20 +200,12 @@ final class CartViewController: UIViewController {
         }
     }
     
-    private func updateUIAfterDeletion() {
+    private func updateUI() {
         nftCountLabel.text = "\(nftItems.count) NFT"
-        
-        let totalPrice = calculateTotalPrice()
-        priceNFTLabel.text = totalPrice
+        priceNFTLabel.text = cartService.getTotalPrice()
         
         checkPlaceholder()
-        
         nftTableView.reloadData()
-    }
-    
-    private func calculateTotalPrice() -> String {
-        let totalPrice = Double(nftItems.count) * 1.18
-        return String(format: "%.2f ETH", totalPrice)
     }
     
     @objc private func payButtonTap() {
@@ -247,6 +255,12 @@ final class CartViewController: UIViewController {
         alert.addAction(closeButton)
         
         self.present(alert, animated: true)
+    }
+    
+    deinit {
+        if let observer = cartUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 }
 
@@ -304,12 +318,7 @@ extension CartViewController {
     }
     
     private func performDelete(at indexPath: IndexPath) {
-        nftItems.remove(at: indexPath.row)
-        
-        nftTableView.performBatchUpdates({
-            nftTableView.deleteRows(at: [indexPath], with: .automatic)
-        }, completion: { [weak self] _ in
-            self?.updateUIAfterDeletion()
-        })
+        let nftItem = nftItems[indexPath.row]
+        cartService.removeNFT(withId: nftItem.id)
     }
 }
