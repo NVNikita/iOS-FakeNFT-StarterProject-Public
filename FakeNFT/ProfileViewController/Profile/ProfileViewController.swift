@@ -15,9 +15,11 @@ final class ProfileViewController: UIViewController, ProfileViewInput {
     private let servicesAssembly: ServicesAssembly
     
     // MARK: - MVP
-    private var presenter: ProfileViewOutput!
-    private var interactor: ProfileInteractorInput!
-    private var router: ProfileRouterImpl!
+    private lazy var presenter: ProfileViewOutput = {
+        ProfilePresenterImpl(view: self, interactor: interactor, router: router)
+    }()
+    private let interactor: ProfileInteractorInput
+    private let router: ProfileRouterImpl
     
     // MARK: - Views
     private let profileView = ProfileView()
@@ -45,21 +47,17 @@ final class ProfileViewController: UIViewController, ProfileViewInput {
     // MARK: - Initialization
     init(servicesAssembly: ServicesAssembly) {
         self.servicesAssembly = servicesAssembly
+        let interactor = ProfileInteractorImpl(servicesAssembly: servicesAssembly)
+        let router = ProfileRouterImpl()
+        self.interactor = interactor
+        self.router = router
         super.init(nibName: nil, bundle: nil)
-        assembleMVP()
+        self.router.viewController = self
     }
     
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - Assembly
-    private func assembleMVP() {
-        interactor = ProfileInteractorImpl(servicesAssembly: servicesAssembly)
-        router = ProfileRouterImpl()
-        router.viewController = self
-        presenter = ProfilePresenterImpl(view: self, interactor: interactor, router: router)
     }
     
     // MARK: - Lifecycle

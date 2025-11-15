@@ -38,7 +38,7 @@ final class NFTCollectionCell: UICollectionViewCell {
         stackView.axis = .horizontal
         stackView.spacing = 2
         for _ in 0..<5 {
-            let star = UIImageView(image: UIImage(named: "white_star"))
+            let star = UIImageView(image: UIImage(resource: .whiteStar))
             star.contentMode = .scaleAspectFit
             stackView.addArrangedSubview(star)
         }
@@ -54,7 +54,7 @@ final class NFTCollectionCell: UICollectionViewCell {
     
     private lazy var likeButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "red_heart"), for: .normal)
+        button.setImage(UIImage(resource: .redHeart), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
         return button

@@ -92,7 +92,12 @@ extension MyNFTView: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: NFTCell.reuseIdentifier, for: indexPath) as! NFTCell
+        let dequeued = tableView.dequeueReusableCell(withIdentifier: NFTCell.reuseIdentifier, for: indexPath)
+        let cell = (dequeued as? NFTCell) ?? {
+            assertionFailure("Dequeued cell is not NFTCell. Check registration and reuseIdentifier.")
+            return NFTCell(style: .default, reuseIdentifier: NFTCell.reuseIdentifier)
+        }()
+        
         let nft = nftItems[indexPath.row]
         let formattedPrice = numberFormatter.string(from: nft.price as NSNumber) ?? "\(nft.price) ETH"
         let liked = isLiked?(nft.id) ?? false
@@ -109,3 +114,4 @@ extension MyNFTView: UITableViewDataSource, UITableViewDelegate {
         return 140
     }
 }
+

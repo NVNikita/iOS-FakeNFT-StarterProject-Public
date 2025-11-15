@@ -71,7 +71,7 @@ extension FavoritesNftViewController: UICollectionViewDataSource, UICollectionVi
         cell.configure(with: nft, formattedPrice: formattedPrice)
         
         cell.likeButtonTapped = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.likesStorage.removeLike(for: nft.id)
             self.favoriteNfts.removeAll { $0.id == nft.id }
             self.updateNFTView()

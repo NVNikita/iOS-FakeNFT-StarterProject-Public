@@ -176,11 +176,7 @@ final class NFTCell: UITableViewCell {
         for (index, view) in ratingStackView.arrangedSubviews.enumerated() {
             guard let starImageView = view as? UIImageView else { continue }
             
-            if index < rating {
-                starImageView.image = UIImage(named: "yellow_star")
-            } else {
-                starImageView.image = UIImage(named: "white_star")
-            }
+            starImageView.image = UIImage(named: index < rating ? "yellow_star" : "white_star")
         }
     }
     

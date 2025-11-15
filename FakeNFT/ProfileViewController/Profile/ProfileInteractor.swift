@@ -15,7 +15,7 @@ final class ProfileInteractorImpl: ProfileInteractorInput {
     }
     
     func loadNFTs(ids: [String], completion: @escaping (Result<[MyNFT], Error>) -> Void) {
-        if ids.isEmpty {
+        guard !ids.isEmpty else {
             completion(.success([]))
             return
         }

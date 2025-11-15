@@ -19,7 +19,7 @@ struct ProfileDtoObject: Dto {
     
     
     func asDictionary() -> [String: String] {
-        return [
+         [
             CodingKeys.name.rawValue: name.isEmpty ? "" : name,
             CodingKeys.description.rawValue: description.isEmpty ? "" : description,
             CodingKeys.website.rawValue: website.isEmpty ? "" : website,

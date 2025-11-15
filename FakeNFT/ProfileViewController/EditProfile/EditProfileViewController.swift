@@ -34,7 +34,6 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     
     // MARK: - Navigation Bar
     private func setupNavigationBar() {
-        // Не показываем заголовок
         navigationItem.title = nil
         navigationController?.navigationBar.tintColor = UIColor(resource: .yBlack)
         
