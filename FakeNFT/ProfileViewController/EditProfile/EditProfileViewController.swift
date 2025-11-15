@@ -107,7 +107,7 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     }
     
     func setLoading(_ isLoading: Bool) {
-
+        
         view.isUserInteractionEnabled = !isLoading
         editProfileView.setSaveButtonEnabled(!isLoading)
         

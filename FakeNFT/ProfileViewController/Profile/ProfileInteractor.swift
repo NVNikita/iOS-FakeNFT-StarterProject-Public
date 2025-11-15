@@ -1,19 +1,19 @@
 import Foundation
 
 final class ProfileInteractorImpl: ProfileInteractorInput {
-
+    
     private let servicesAssembly: ServicesAssembly
-
+    
     init(servicesAssembly: ServicesAssembly) {
         self.servicesAssembly = servicesAssembly
     }
-
+    
     func loadProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
         servicesAssembly.profileService.loadProfile { result in
             completion(result)
         }
     }
-
+    
     func loadNFTs(ids: [String], completion: @escaping (Result<[MyNFT], Error>) -> Void) {
         if ids.isEmpty {
             completion(.success([]))
@@ -34,7 +34,7 @@ final class ProfileInteractorImpl: ProfileInteractorInput {
             completion(.success(loaded))
         }
     }
-
+    
     func updateLikes(_ likes: [String], completion: @escaping (Result<Void, Error>) -> Void) {
         servicesAssembly.profileService.updateLikes(likes: likes) { result in
             switch result {

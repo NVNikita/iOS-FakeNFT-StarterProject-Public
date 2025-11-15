@@ -9,21 +9,21 @@ protocol MyNftService {
 }
 
 final class MyNftServiceImpl: MyNftService {
-
+    
     private let networkClient: NetworkClient
     private let storage: MyNftStorage
-
+    
     init(networkClient: NetworkClient, storage: MyNftStorage) {
         self.storage = storage
         self.networkClient = networkClient
     }
-
+    
     func loadNft(id: String, completion: @escaping MyNftCompletion) {
         if let nft = storage.getNft(with: id) {
             completion(.success(nft))
             return
         }
-
+        
         let request = NFTRequest(id: id)
         networkClient.send(request: request, type: MyNFT.self) { [weak storage] result in
             switch result {

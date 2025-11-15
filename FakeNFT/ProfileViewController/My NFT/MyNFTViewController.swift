@@ -8,16 +8,16 @@ enum SortType: String {
 }
 
 final class MyNFTViewController: UIViewController {
-
-
+    
+    
     var nfts: [MyNFT] = []
     private let sortTypeKey = "selectedSortType"
     
     var saveLikes: (() -> Void)?
     private let likesStorage = LikesStorageImpl.shared
-
+    
     override func loadView() {
-   
+        
         let nftView = MyNFTView()
         nftView.isLiked = { [weak self] id in
             return self?.likesStorage.isLiked(id) ?? false
@@ -33,7 +33,7 @@ final class MyNFTViewController: UIViewController {
         }
         view = nftView
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -42,7 +42,7 @@ final class MyNFTViewController: UIViewController {
         sortNFTs(by: savedSortType)
         updateNFTView()
     }
-
+    
     // MARK: - Навигация (Эпик 3)
     private func setupNavigationBar() {
         title = NSLocalizedString("MyNFT", comment: "")
@@ -60,13 +60,13 @@ final class MyNFTViewController: UIViewController {
             action: #selector(filterButtonTapped)
         )
     }
-
+    
     @objc private func backButtonTapped() {
         // Шаг: при уходе — инициировать сохранение лайков
         saveLikes?()
         navigationController?.popViewController(animated: true)
     }
-
+    
     // MARK: - Сортировка (Эпик 3)
     @objc private func filterButtonTapped() {
         let alert = UIAlertController(
@@ -102,7 +102,7 @@ final class MyNFTViewController: UIViewController {
         ))
         present(alert, animated: true, completion: nil)
     }
-
+    
     func sortNFTs(by type: SortType) {
         // Шаг: сохраняем выбранный тип сортировки
         UserDefaults.standard.set(type.rawValue, forKey: sortTypeKey)
@@ -116,7 +116,7 @@ final class MyNFTViewController: UIViewController {
         }
         updateNFTView()
     }
-
+    
     private func getSavedSortType() -> SortType {
         guard let rawValue = UserDefaults.standard.string(forKey: sortTypeKey),
               let savedType = SortType(rawValue: rawValue) else {
@@ -124,7 +124,7 @@ final class MyNFTViewController: UIViewController {
         }
         return savedType
     }
-
+    
     private func updateNFTView() {
         (view as? MyNFTView)?.updateNFTs(with: nfts)
     }

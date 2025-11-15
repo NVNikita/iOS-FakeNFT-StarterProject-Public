@@ -2,13 +2,13 @@
 import Foundation
 
 struct ProfileDtoObject: Dto {
-
+    
     let name: String
     let description: String
     let website: String
     let avatar: String
     let likes: [String]
-
+    
     enum CodingKeys: String, CodingKey {
         case name
         case description
@@ -16,8 +16,8 @@ struct ProfileDtoObject: Dto {
         case avatar
         case likes
     }
-
-
+    
+    
     func asDictionary() -> [String: String] {
         return [
             CodingKeys.name.rawValue: name.isEmpty ? "" : name,

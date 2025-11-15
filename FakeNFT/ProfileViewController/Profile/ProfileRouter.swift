@@ -2,9 +2,9 @@ import UIKit
 import WebKit
 
 final class ProfileRouterImpl: ProfileRouterInput {
-
+    
     weak var viewController: UIViewController?
-
+    
     func openEditProfile(with profile: Profile, delegate: EditProfileDelegate?) {
         guard let vc = viewController else { return }
         // Для сборки используем существующую EditProfileAssembly
@@ -22,7 +22,7 @@ final class ProfileRouterImpl: ProfileRouterInput {
             }
         }
     }
-
+    
     func openWeb(url: URL) {
         guard let nav = viewController?.navigationController else { return }
         let web = WKWebView()
@@ -39,7 +39,7 @@ final class ProfileRouterImpl: ProfileRouterInput {
         webVC.hidesBottomBarWhenPushed = true
         nav.pushViewController(webVC, animated: true)
     }
-
+    
     func pushMyNFT(nfts: [MyNFT], onSaveLikes: @escaping () -> Void) {
         guard let nav = viewController?.navigationController else { return }
         let vc = MyNFTViewController()
@@ -48,7 +48,7 @@ final class ProfileRouterImpl: ProfileRouterInput {
         vc.saveLikes = onSaveLikes
         nav.pushViewController(vc, animated: true)
     }
-
+    
     func pushFavorites(nfts: [MyNFT], onSaveLikes: @escaping () -> Void) {
         guard let nav = viewController?.navigationController else { return }
         let vc = FavoritesNftViewController()

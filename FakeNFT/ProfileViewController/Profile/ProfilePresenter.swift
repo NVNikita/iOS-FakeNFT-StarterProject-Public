@@ -38,16 +38,16 @@ protocol ProfileRouterInput: AnyObject {
 // MARK: - Presenter
 
 final class ProfilePresenterImpl: ProfileViewOutput {
-
+    
     private weak var view: ProfileViewInput?
     private let interactor: ProfileInteractorInput
     private let router: ProfileRouterInput
     private let likesStorage = LikesStorageImpl.shared
-
+    
     private var currentProfile: Profile?
     private var myNftIds: [String] = []
     private var likedIds: [String] = []
-
+    
     init(view: ProfileViewInput,
          interactor: ProfileInteractorInput,
          router: ProfileRouterInput) {
@@ -55,9 +55,9 @@ final class ProfilePresenterImpl: ProfileViewOutput {
         self.interactor = interactor
         self.router = router
     }
-
+    
     // MARK: - ProfileViewOutput
-
+    
     func viewDidLoad() {
         view?.setLoading(true)
         interactor.loadProfile { [weak self] result in
@@ -77,12 +77,12 @@ final class ProfilePresenterImpl: ProfileViewOutput {
             }
         }
     }
-
+    
     func didTapEdit() {
         guard let profile = currentProfile else { return }
         router.openEditProfile(with: profile, delegate: self)
     }
-
+    
     func didTapWebsite(_ address: String) {
         let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -90,18 +90,18 @@ final class ProfilePresenterImpl: ProfileViewOutput {
         guard let url = URL(string: normalized) else { return }
         router.openWeb(url: url)
     }
-
+    
     func didTapMyNFT() {
         loadNFTsAndNavigate(ids: myNftIds, toFavorites: false)
     }
-
+    
     func didTapFavorites() {
         likedIds = likesStorage.getAllLikes()
         loadNFTsAndNavigate(ids: likedIds, toFavorites: true)
     }
-
+    
     // MARK: - Helpers
-
+    
     private func loadNFTsAndNavigate(ids: [String], toFavorites: Bool) {
         interactor.loadNFTs(ids: ids) { [weak self] result in
             guard let self else { return }
