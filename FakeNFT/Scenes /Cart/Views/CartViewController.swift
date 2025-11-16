@@ -11,9 +11,7 @@ final class CartViewController: UIViewController {
     
     private let cartService = CartService.shared
     
-    private var nftItems: [NFTItem] {
-        return cartService.getNFTs()
-    }
+    private var nftItems: [NFTItem] = []
     
     private var cartUpdateObserver: NSObjectProtocol?
     
@@ -201,10 +199,26 @@ final class CartViewController: UIViewController {
     }
     
     private func updateUI() {
+        nftItems = cartService.getNFTs()
         nftCountLabel.text = "\(nftItems.count) NFT"
         priceNFTLabel.text = cartService.getTotalPrice()
         
         checkPlaceholder()
+        nftTableView.reloadData()
+    }
+    
+    private func sortByPrice() {
+        nftItems.sort { $0.numericPrice > $1.numericPrice }
+        nftTableView.reloadData()
+    }
+    
+    private func sortByRating() {
+        nftItems.sort { $0.rating > $1.rating }
+        nftTableView.reloadData()
+    }
+    
+    private func sortByName() {
+        nftItems.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         nftTableView.reloadData()
     }
     
@@ -235,16 +249,16 @@ final class CartViewController: UIViewController {
             message: nil,
             preferredStyle: .actionSheet)
         
-        let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { _ in
-            print("priceButtonSort tap")
+        let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { [weak self] _ in
+            self?.sortByPrice()
         }
         
-        let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { _ in
-            print("raitingButtonSort tap")
+        let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { [weak self] _ in
+            self?.sortByRating()
         }
         
-        let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { _ in
-            print("nameButtonSort tap")
+        let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { [weak self] _ in
+            self?.sortByName()
         }
         
         let closeButton = UIAlertAction(title: "Закрыть", style: .cancel)
