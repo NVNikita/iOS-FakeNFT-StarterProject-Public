@@ -9,7 +9,7 @@ import UIKit
 
 final class NFTTableViewCell: UITableViewCell {
     
-    private lazy var imageNFT: UIImageView = {
+    lazy var imageNFT: UIImageView = {
         let imageNFT = UIImageView()
         imageNFT.contentMode = .scaleAspectFit
         imageNFT.layer.masksToBounds = true

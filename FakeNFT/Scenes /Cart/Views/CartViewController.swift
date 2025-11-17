@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class CartViewController: UIViewController {
     
@@ -27,8 +28,10 @@ final class CartViewController: UIViewController {
     }
     
     private let cartService = CartService.shared
+    private let nftService: NftService
     private var nftItems: [NFTItem] = []
     private var cartUpdateObserver: NSObjectProtocol?
+    private var isLoading = false
     
     private let userDefaults = UserDefaults.standard
     private let sortTypeKey = "CartSortType"
@@ -99,6 +102,22 @@ final class CartViewController: UIViewController {
         return label
     }()
     
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .medium)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
+    
+    init(nftService: NftService) {
+        self.nftService = nftService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadSortType()
@@ -107,12 +126,7 @@ final class CartViewController: UIViewController {
         setupTableView()
         setupConstraints()
         setupCartObserver()
-        updateUI()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        updateUI()
+        loadCartData()
     }
     
     private func loadSortType() {
@@ -191,6 +205,7 @@ final class CartViewController: UIViewController {
         footerStackView.addSubview(priceNFTLabel)
         footerStackView.addSubview(payButton)
         view.addSubview(placeholderTitle)
+        view.addSubview(activityIndicator)
     }
     
     private func setupTableView() {
@@ -205,7 +220,7 @@ final class CartViewController: UIViewController {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.updateUI()
+            self?.loadCartData()
         }
     }
     
@@ -235,8 +250,78 @@ final class CartViewController: UIViewController {
             placeholderTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             placeholderTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             placeholderTitle.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            placeholderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            placeholderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    func loadCartData() {
+        guard !isLoading else { return }
+        
+        isLoading = true
+        activityIndicator.startAnimating()
+        placeholderTitle.isHidden = true
+        
+        cartService.getCart { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let order):
+                if order.nfts.isEmpty {
+                    self.handleEmptyCart()
+                } else {
+                    self.loadNFTItems(from: order.nfts)
+                }
+            case .failure(let error):
+                self.handleLoadingError(error)
+            }
+        }
+    }
+    
+    private func loadNFTItems(from nftIds: [String]) {
+        cartService.loadNFTs(from: nftIds, nftService: nftService) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                self.isLoading = false
+                self.activityIndicator.stopAnimating()
+                
+                switch result {
+                case .success(let nfts):
+                    self.nftItems = self.cartService.convertToNFTItems(nfts)
+                    self.applyCurrentSort()
+                    self.updateUI()
+                case .failure(let error):
+                    print("Error loading NFTs: \(error)")
+                    self.showErrorAlert(message: "Не удалось загрузить NFT")
+                    self.nftItems = []
+                    self.updateUI()
+                }
+            }
+        }
+    }
+    
+    private func handleEmptyCart() {
+        DispatchQueue.main.async {
+            self.isLoading = false
+            self.activityIndicator.stopAnimating()
+            self.nftItems = []
+            self.updateUI()
+        }
+    }
+    
+    private func handleLoadingError(_ error: Error) {
+        DispatchQueue.main.async {
+            self.isLoading = false
+            self.activityIndicator.stopAnimating()
+            print("Error loading cart: \(error)")
+            self.showErrorAlert(message: "Не удалось загрузить корзину")
+            self.nftItems = self.cartService.getNFTs()
+            self.applyCurrentSort()
+            self.updateUI()
+        }
     }
     
     private func checkPlaceholder() {
@@ -254,11 +339,8 @@ final class CartViewController: UIViewController {
     }
     
     func updateUI() {
-        nftItems = cartService.getNFTs()
-        applyCurrentSort()
         nftCountLabel.text = "\(nftItems.count) NFT"
-        priceNFTLabel.text = cartService.getTotalPrice()
-        
+        priceNFTLabel.text = cartService.getTotalPrice(nftItems: nftItems)
         checkPlaceholder()
         nftTableView.reloadData()
     }
@@ -312,6 +394,16 @@ final class CartViewController: UIViewController {
         self.present(alert, animated: true)
     }
     
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
     deinit {
         if let observer = cartUpdateObserver {
             NotificationCenter.default.removeObserver(observer)
@@ -332,8 +424,21 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         
         let nftItem = nftItems[indexPath.row]
         
+        if let imageURLString = nftItem.imageURL, let imageURL = URL(string: imageURLString) {
+            cell.imageNFT.kf.setImage(
+                with: imageURL,
+                placeholder: UIImage(named: "placeholder"),
+                options: [
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage
+                ]
+            )
+        } else {
+            cell.imageNFT.image = nil
+        }
+        
         cell.config(
-            image: nftItem.image,
+            image: cell.imageNFT.image,
             nameNFT: nftItem.name,
             rating: nftItem.rating,
             priceNFT: nftItem.price
@@ -358,7 +463,21 @@ extension CartViewController {
         alertVC.modalTransitionStyle = .crossDissolve
         
         let nftItem = nftItems[indexPath.row]
-        alertVC.configure(imageView: nftItem.image)
+        
+        if let imageURLString = nftItem.imageURL, let imageURL = URL(string: imageURLString) {
+            KingfisherManager.shared.retrieveImage(with: imageURL) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let imageResult):
+                        alertVC.configure(imageView: imageResult.image)
+                    case .failure:
+                        alertVC.configure(imageView: nil)
+                    }
+                }
+            }
+        } else {
+            alertVC.configure(imageView: nil)
+        }
         
         alertVC.onBackButtonTapped = {
             print("Вернуться tapped - отмена удаления")
@@ -374,6 +493,18 @@ extension CartViewController {
     
     private func performDelete(at indexPath: IndexPath) {
         let nftItem = nftItems[indexPath.row]
-        cartService.removeNFT(withId: nftItem.id)
+        
+        cartService.removeFromCart(nftId: nftItem.id) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.nftItems.remove(at: indexPath.row)
+                    self?.updateUI()
+                case .failure(let error):
+                    print("Error removing NFT: \(error)")
+                    self?.showErrorAlert(message: "Не удалось удалить NFT")
+                }
+            }
+        }
     }
 }

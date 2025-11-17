@@ -100,11 +100,20 @@ final class SuccessfulPaymentViewController: UIViewController {
         
         tabBarController.selectedIndex = 1
         
-        CartService.shared.clearCart()
-        
-        if let navController = tabBarController.viewControllers?[1] as? UINavigationController,
-           let cartVC = navController.viewControllers.first as? CartViewController {
-            cartVC.updateUI()
+        CartService.shared.clearCart { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("Корзина успешно очищена после оплаты")
+                case .failure(let error):
+                    print("Ошибка при очистке корзины: \(error)")
+                }
+                
+                if let navController = tabBarController.viewControllers?[1] as? UINavigationController,
+                   let cartVC = navController.viewControllers.first as? CartViewController {
+                    cartVC.loadCartData()
+                }
+            }
         }
     }
 }
