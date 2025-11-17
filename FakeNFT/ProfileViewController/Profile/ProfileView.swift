@@ -21,7 +21,6 @@ final class ProfileView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = Constraints.avatarCornerRadius
         imageView.clipsToBounds = true
-        // Важно: непрозрачный фон, совпадающий с основным
         imageView.backgroundColor = .systemBackground
         return imageView
     }()
@@ -65,16 +64,13 @@ final class ProfileView: UIView {
         tableView.rowHeight = Constraints.tableRowHeight
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ProfileCell")
-        // Единый фон
         tableView.backgroundColor = .systemBackground
-        // Убираем лишний дефолтный фон футера
         tableView.tableFooterView = UIView()
         return tableView
     }()
     
     private lazy var profileContainerView: UIView = {
         let view = UIView()
-        // Единый фон
         view.backgroundColor = .systemBackground
         return view
     }()
@@ -82,7 +78,6 @@ final class ProfileView: UIView {
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
-        // Единый фон всего экрана
         backgroundColor = .systemBackground
         setupLayout()
     }
@@ -151,7 +146,6 @@ final class ProfileView: UIView {
         userNameLabel.text = profile.name
         
         if let avatarURLString = profile.avatar, let url = URL(string: avatarURLString) {
-            // Отключаем transition, чтобы не было вспышки
             profileAvatar.kf.setImage(
                 with: url,
                 placeholder: UIImage(systemName: "person.crop.circle"),
@@ -169,7 +163,6 @@ final class ProfileView: UIView {
             userWebSiteLabel.alpha = 1
             userWebSiteLabel.isUserInteractionEnabled = true
         } else {
-            // Не скрываем, чтобы не прыгал layout
             userWebSiteLabel.text = ""
             userWebSiteLabel.alpha = 0
             userWebSiteLabel.isUserInteractionEnabled = false
@@ -236,7 +229,6 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         cell.tintColor = UIColor(resource: .yBlack)
         cell.selectionStyle = .none
         
-        // Важно: единый фон для исключения мерцаний
         cell.backgroundColor = .systemBackground
         cell.contentView.backgroundColor = .systemBackground
         
