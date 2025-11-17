@@ -9,11 +9,11 @@ import UIKit
 
 final class CartViewController: UIViewController {
     
-    private let cartService = CartService.shared
-    
-    private var nftItems: [NFTItem] = []
-    
-    private var cartUpdateObserver: NSObjectProtocol?
+    private enum SortType: String, CaseIterable {
+        case price = "price"
+        case rating = "rating"
+        case name = "name"
+    }
     
     private enum Constants {
         static let cornerRadius12: CGFloat = 12
@@ -25,6 +25,14 @@ final class CartViewController: UIViewController {
         
         static let numberOfLinesTitles: Int = 1
     }
+    
+    private let cartService = CartService.shared
+    private var nftItems: [NFTItem] = []
+    private var cartUpdateObserver: NSObjectProtocol?
+    
+    private let userDefaults = UserDefaults.standard
+    private let sortTypeKey = "CartSortType"
+    private var currentSortType: SortType = .name
     
     private lazy var nftTableView: UITableView = {
         let tableView = UITableView()
@@ -93,6 +101,7 @@ final class CartViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadSortType()
         setupNavigationBar()
         setupUI()
         setupTableView()
@@ -104,6 +113,52 @@ final class CartViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateUI()
+    }
+    
+    private func loadSortType() {
+        if let savedSortType = userDefaults.string(forKey: sortTypeKey),
+           let sortType = SortType(rawValue: savedSortType) {
+            currentSortType = sortType
+        } else {
+            currentSortType = .name
+            saveSortType()
+        }
+    }
+    
+    private func saveSortType() {
+        userDefaults.set(currentSortType.rawValue, forKey: sortTypeKey)
+    }
+    
+    private func applyCurrentSort() {
+        switch currentSortType {
+        case .price:
+            sortByPrice()
+        case .rating:
+            sortByRating()
+        case .name:
+            sortByName()
+        }
+    }
+    
+    private func sortByPrice() {
+        nftItems.sort { $0.numericPrice > $1.numericPrice }
+        currentSortType = .price
+        saveSortType()
+        nftTableView.reloadData()
+    }
+    
+    private func sortByRating() {
+        nftItems.sort { $0.rating > $1.rating }
+        currentSortType = .rating
+        saveSortType()
+        nftTableView.reloadData()
+    }
+    
+    private func sortByName() {
+        nftItems.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        currentSortType = .name
+        saveSortType()
+        nftTableView.reloadData()
     }
     
     private func setupNavigationBar() {
@@ -200,25 +255,11 @@ final class CartViewController: UIViewController {
     
     func updateUI() {
         nftItems = cartService.getNFTs()
+        applyCurrentSort()
         nftCountLabel.text = "\(nftItems.count) NFT"
         priceNFTLabel.text = cartService.getTotalPrice()
         
         checkPlaceholder()
-        nftTableView.reloadData()
-    }
-    
-    private func sortByPrice() {
-        nftItems.sort { $0.numericPrice > $1.numericPrice }
-        nftTableView.reloadData()
-    }
-    
-    private func sortByRating() {
-        nftItems.sort { $0.rating > $1.rating }
-        nftTableView.reloadData()
-    }
-    
-    private func sortByName() {
-        nftItems.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         nftTableView.reloadData()
     }
     
