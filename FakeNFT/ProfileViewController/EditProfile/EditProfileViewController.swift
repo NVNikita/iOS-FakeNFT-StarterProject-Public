@@ -34,9 +34,8 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     
     // MARK: - Navigation Bar
     private func setupNavigationBar() {
-        // Не показываем заголовок
         navigationItem.title = nil
-        navigationController?.navigationBar.tintColor = UIColor(named: "YBlackColor")
+        navigationController?.navigationBar.tintColor = UIColor(resource: .yBlack)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
@@ -107,7 +106,7 @@ final class EditProfileViewController: UIViewController, EditProfileViewInput {
     }
     
     func setLoading(_ isLoading: Bool) {
-
+        
         view.isUserInteractionEnabled = !isLoading
         editProfileView.setSaveButtonEnabled(!isLoading)
         

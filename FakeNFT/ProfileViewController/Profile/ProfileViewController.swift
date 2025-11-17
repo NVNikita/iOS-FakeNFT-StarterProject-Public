@@ -1,18 +1,30 @@
 import UIKit
 import WebKit
+import Kingfisher
 import ProgressHUD
 
-final class ProfileViewController: UIViewController {
+
+enum NFTScreenType {
+    case nftScreen
+    case favoritesScreen
+}
+
+final class ProfileViewController: UIViewController, ProfileViewInput {
     
     // MARK: - Dependencies
-    
     private let servicesAssembly: ServicesAssembly
     
+    // MARK: - MVP
+    private lazy var presenter: ProfileViewOutput = {
+        ProfilePresenterImpl(view: self, interactor: interactor, router: router)
+    }()
+    private let interactor: ProfileInteractorInput
+    private let router: ProfileRouterImpl
+    
     // MARK: - Views
-    
     private let profileView = ProfileView()
-    private var profile: Profile?
     
+    // MARK: - UI Elements
     private lazy var editButton: UIButton = {
         let button = UIButton()
         let imageButton = UIImage(named: "Edit")
@@ -24,16 +36,23 @@ final class ProfileViewController: UIViewController {
         return button
     }()
     
-    private lazy var webView: WKWebView = {
-        let webView = WKWebView()
-        return webView
-    }()
+    // MARK: - Localization Keys
+    private enum L {
+        static let errorTitle = NSLocalizedString("Error.title", comment: "")
+        static let failedToLoadProfile = NSLocalizedString("FailedToLoadProfile", comment: "")
+        static let tryAgain = NSLocalizedString("TryAgain", comment: "")
+        static let cancel = NSLocalizedString("Cancel", comment: "")
+    }
     
-    // MARK: - Init
-    
+    // MARK: - Initialization
     init(servicesAssembly: ServicesAssembly) {
         self.servicesAssembly = servicesAssembly
+        let interactor = ProfileInteractorImpl(servicesAssembly: servicesAssembly)
+        let router = ProfileRouterImpl()
+        self.interactor = interactor
+        self.router = router
         super.init(nibName: nil, bundle: nil)
+        self.router.viewController = self
     }
     
     @available(*, unavailable)
@@ -42,24 +61,15 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view = profileView
         setupEditButton()
-        loadProfile()
-        
-        profileView.websiteLabelTapped = { [weak self] address in
-            self?.didTapOnWebsiteLabel(with: address)
-        }
-        profileView.aboutDeveloper = { [weak self] address in
-            self?.didTapOnWebsiteLabel(with: address)
-        }
+        wireViewCallbacks()
+        presenter.viewDidLoad()
     }
     
-    // MARK: - Setup
-    
+    // MARK: - Setup Methods
     private func setupEditButton() {
         view.addSubview(editButton)
         NSLayoutConstraint.activate([
@@ -68,107 +78,72 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    // MARK: - Private
-    
-    private func loadProfile() {
-        ProgressHUD.show()
-        servicesAssembly.profileService.loadProfile { [weak self] result in
-            DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let loadedProfile):
-                    self.profile = loadedProfile
-                    self.profileView.updateUI(with: loadedProfile)
-                case .failure(let error):
-                    self.showErrorAlert(with: error)
-                }
-            }
+    private func wireViewCallbacks() {
+        profileView.myNFTTapped = { [weak self] in
+            self?.presenter.didTapMyNFT()
+        }
+        profileView.favoritesTapped = { [weak self] in
+            self?.presenter.didTapFavorites()
+        }
+        profileView.websiteLabelTapped = { [weak self] address in
+            self?.presenter.didTapWebsite(address)
+        }
+        profileView.aboutDeveloper = { [weak self] address in
+            self?.presenter.didTapWebsite(address)
         }
     }
     
-    private func showErrorAlert(with error: Error) {
-        let alert = UIAlertController(
-            title: NSLocalizedString("Error.title", comment: ""),
-            message: NSLocalizedString("FailedToLoadProfile", comment: ""),
-            preferredStyle: .alert
-        )
-        let retryAction = UIAlertAction(
-            title: NSLocalizedString("TryAgain", comment: ""),
-            style: .default
-        ) { [weak self] _ in
-            self?.loadProfile()
-        }
-        let cancelAction = UIAlertAction(
-            title: NSLocalizedString("Cancel", comment: ""),
-            style: .cancel,
-            handler: nil
-        )
-        alert.addAction(retryAction)
-        alert.addAction(cancelAction)
-        present(alert, animated: true, completion: nil)
-    }
-    
+    // MARK: - Actions
     @objc private func editProfileTapped() {
-        guard let profile = profile else { return }
-        let assembly = EditProfileAssembly(servicesAssembly: servicesAssembly, delegate: self)
-        let editVC = assembly.build(with: profile)
-        
-        if let nav = navigationController {
-            nav.pushViewController(editVC, animated: true)
+        presenter.didTapEdit()
+    }
+    
+    // MARK: - ProfileViewInput
+    func display(profile: Profile) {
+        profileView.updateUI(with: profile)
+    }
+    
+    func setLoading(_ isLoading: Bool) {
+        if isLoading {
+            ProgressHUD.show()
         } else {
-            let nav = UINavigationController(rootViewController: editVC)
-            nav.modalPresentationStyle = .fullScreen
-            present(nav, animated: true, completion: nil)
+            ProgressHUD.dismiss()
         }
     }
     
-    private func didTapOnWebsiteLabel(with urlString: String) {
-        var validURLString = urlString
-        if !urlString.hasPrefix("https://") {
-            validURLString = "https://\(urlString)"
-        }
-        guard let url = URL(string: validURLString) else { return }
-        
-        let request = URLRequest(url: url)
-        webView.load(request)
-        
-        let webViewController = UIViewController()
-        webViewController.view.addSubview(webView)
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            webView.topAnchor.constraint(equalTo: webViewController.view.topAnchor),
-            webView.bottomAnchor.constraint(equalTo: webViewController.view.bottomAnchor),
-            webView.leadingAnchor.constraint(equalTo: webViewController.view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: webViewController.view.trailingAnchor)
-        ])
-        webViewController.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(webViewController, animated: true)
+    func showError(message: String, retry: (() -> Void)?) {
+        presentErrorAlert(
+            title: L.errorTitle,
+            message: message,
+            retry: retry
+        )
+    }
+    
+    func updateLikesCount() {
+        profileView.updateLikesCountAndUI()
     }
 }
 
-// MARK: - EditProfileDelegate
-
-extension ProfileViewController: EditProfileDelegate {
-    func didUpdateProfile(_ profile: Profile) {
-        self.profile = profile
-        profileView.updateUI(with: profile)
-        let name = profile.name ?? ""
-        let description = profile.description ?? ""
-        let website = profile.website ?? ""
-        let avatar = profile.avatar ?? ""
-        servicesAssembly.profileService.updateProfile(
-            name: name,
-            description: description,
-            website: website,
-            avatar: avatar
-        ) { result in
-            switch result {
-            case .success(let updatedProfile):
-                print("Profile successfully updated: \(updatedProfile)")
-            case .failure(let error):
-                print("Error updating profile: \(error)")
-            }
+// MARK: - Alerts
+private extension ProfileViewController {
+    func presentErrorAlert(title: String, message: String, retry: (() -> Void)? = nil) {
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        if let retry = retry {
+            alert.addAction(UIAlertAction(
+                title: L.tryAgain,
+                style: .default,
+                handler: { _ in retry() }
+            ))
         }
+        alert.addAction(UIAlertAction(
+            title: L.cancel,
+            style: .cancel,
+            handler: nil
+        ))
+        present(alert, animated: true, completion: nil)
     }
 }

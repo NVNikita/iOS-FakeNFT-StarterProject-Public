@@ -3,6 +3,7 @@ import Kingfisher
 
 final class ProfileView: UIView {
     
+    private let likesStorage = LikesStorageImpl.shared
     private var nftsCount: Int = Constraints.initialNFTsCount
     private var likesCount: Int = 0
     
@@ -26,7 +27,7 @@ final class ProfileView: UIView {
     private lazy var userNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Mock Name"
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = FontStyle.title
         return label
     }()
@@ -47,7 +48,7 @@ final class ProfileView: UIView {
     private lazy var profileInfoLabel: UILabel = {
         let label = UILabel()
         label.text = NSLocalizedString("NoInformation", comment: "")
-        label.textColor = UIColor(named: "YBlackColor")
+        label.textColor = UIColor(resource: .yBlack)
         label.font = FontStyle.info
         label.numberOfLines = Constraints.infoNumberOfLines
         label.lineBreakMode = .byWordWrapping
@@ -85,12 +86,10 @@ final class ProfileView: UIView {
     }
     
     private func addSubviews() {
-        
         [profileContainerView, profileTableView].forEach {
             addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        
         [profileAvatar, userNameLabel, profileInfoLabel, userWebSiteLabel].forEach {
             profileContainerView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -155,10 +154,17 @@ final class ProfileView: UIView {
         
         profileInfoLabel.text = profile.description ?? NSLocalizedString("NoInformation", comment: "")
         
+        self.nftsCount = profile.nfts.count
+        self.likesCount = profile.likes.count
         
         profileTableView.reloadData()
     }
     
+    func updateLikesCountAndUI() {
+        let likes = likesStorage.getAllLikes()
+        likesCount = likes.count
+        profileTableView.reloadData()
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -184,7 +190,7 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         }
         
         cell.textLabel?.font = FontStyle.cellTitle
-        cell.textLabel?.textColor = UIColor(named: "YBlackColor")
+        cell.textLabel?.textColor = UIColor(resource: .yBlack)
         
         let chevronImage = UIImage(
             systemName: "chevron.forward",
@@ -197,7 +203,7 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
         let chevronImageView = UIImageView(image: chevronImage)
         
         cell.accessoryView = chevronImageView
-        cell.tintColor = UIColor(named: "YBlackColor")
+        cell.tintColor = UIColor(resource: .yBlack)
         cell.selectionStyle = .none
         return cell
     }

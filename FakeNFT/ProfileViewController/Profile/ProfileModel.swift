@@ -10,3 +10,4 @@ struct Profile: Decodable {
     var likes: [String]
     var id: String
 }
+

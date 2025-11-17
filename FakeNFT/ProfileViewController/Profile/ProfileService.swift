@@ -1,9 +1,8 @@
-
 import Foundation
 
 typealias ProfileCompletion = (Result<Profile, Error>) -> Void
 
-protocol ProfileServiceProtocol {
+protocol ProfileService {
     func loadProfile(completion: @escaping ProfileCompletion)
     func updateProfile(
         name: String,
@@ -12,15 +11,17 @@ protocol ProfileServiceProtocol {
         avatar: String,
         completion: @escaping ProfileCompletion
     )
+    
     func updateLikes(
         likes: [String],
         completion: @escaping ProfileCompletion
     )
 }
 
-final class ProfileServiceImpl: ProfileServiceProtocol {
+final class ProfileServiceImpl: ProfileService {
     
     private let networkClient: NetworkClient
+    private let likesStorage = LikesStorageImpl.shared
     
     init(networkClient: NetworkClient) {
         self.networkClient = networkClient
@@ -40,14 +41,9 @@ final class ProfileServiceImpl: ProfileServiceProtocol {
         avatar: String,
         completion: @escaping ProfileCompletion
     ) {
-        let dto = ProfileDtoObject(
-            name: name,
-            description: description,
-            website: website,
-            avatar: avatar,
-            likes: [","]
-        )
+        let dto = ProfileDtoObject(name: name, description: description, website: website, avatar: avatar, likes: [","])
         let request = ProfilePutRequest(dto: dto)
+        
         networkClient.send(request: request, type: Profile.self) { result in
             switch result {
             case .success(let updatedProfile):
@@ -72,6 +68,7 @@ final class ProfileServiceImpl: ProfileServiceProtocol {
                     avatar: currentProfile.avatar ?? "",
                     likes: likes
                 )
+                
                 let request = ProfilePutRequest(dto: dto)
                 self.networkClient.send(request: request, type: Profile.self) { result in
                     completion(result)

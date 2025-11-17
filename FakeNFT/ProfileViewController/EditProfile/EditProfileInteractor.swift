@@ -3,9 +3,9 @@ import Foundation
 
 final class EditProfileInteractorImpl: EditProfileInteractorInput {
     
-    private let profileService: ProfileServiceProtocol
+    private let profileService: ProfileService
     
-    init(profileService: ProfileServiceProtocol) {
+    init(profileService: ProfileService) {
         self.profileService = profileService
     }
     
