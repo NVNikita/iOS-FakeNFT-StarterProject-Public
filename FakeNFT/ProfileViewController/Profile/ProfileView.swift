@@ -21,6 +21,8 @@ final class ProfileView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = Constraints.avatarCornerRadius
         imageView.clipsToBounds = true
+        // Важно: непрозрачный фон, совпадающий с основным
+        imageView.backgroundColor = .systemBackground
         return imageView
     }()
     
@@ -63,14 +65,25 @@ final class ProfileView: UIView {
         tableView.rowHeight = Constraints.tableRowHeight
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ProfileCell")
+        // Единый фон
+        tableView.backgroundColor = .systemBackground
+        // Убираем лишний дефолтный фон футера
+        tableView.tableFooterView = UIView()
         return tableView
     }()
     
-    private lazy var profileContainerView = UIView()
+    private lazy var profileContainerView: UIView = {
+        let view = UIView()
+        // Единый фон
+        view.backgroundColor = .systemBackground
+        return view
+    }()
     
     // MARK: - Initialization
     override init(frame: CGRect) {
         super.init(frame: frame)
+        // Единый фон всего экрана
+        backgroundColor = .systemBackground
         setupLayout()
     }
     
@@ -128,7 +141,7 @@ final class ProfileView: UIView {
     
     // MARK: - Actions
     @objc private func didTapOnWebsiteLabel() {
-        if let text = userWebSiteLabel.text {
+        if let text = userWebSiteLabel.text, !text.isEmpty {
             websiteLabelTapped?(text)
         }
     }
@@ -138,18 +151,28 @@ final class ProfileView: UIView {
         userNameLabel.text = profile.name
         
         if let avatarURLString = profile.avatar, let url = URL(string: avatarURLString) {
-            profileAvatar.kf.setImage(with: url, placeholder: UIImage(systemName: "person.crop.circle"))
+            // Отключаем transition, чтобы не было вспышки
+            profileAvatar.kf.setImage(
+                with: url,
+                placeholder: UIImage(systemName: "person.crop.circle"),
+                options: [.transition(.none)]
+            )
         } else {
             profileAvatar.image = UIImage(systemName: "person.crop.circle")
         }
         
-        if let website = profile.website {
+        if let website = profile.website, !website.isEmpty {
             let cleanedWebsite = website
                 .replacingOccurrences(of: "https://", with: "")
                 .replacingOccurrences(of: "http://", with: "")
             userWebSiteLabel.text = cleanedWebsite
+            userWebSiteLabel.alpha = 1
+            userWebSiteLabel.isUserInteractionEnabled = true
         } else {
-            userWebSiteLabel.isHidden = true
+            // Не скрываем, чтобы не прыгал layout
+            userWebSiteLabel.text = ""
+            userWebSiteLabel.alpha = 0
+            userWebSiteLabel.isUserInteractionEnabled = false
         }
         
         profileInfoLabel.text = profile.description ?? NSLocalizedString("NoInformation", comment: "")
@@ -157,13 +180,19 @@ final class ProfileView: UIView {
         self.nftsCount = profile.nfts.count
         self.likesCount = profile.likes.count
         
-        profileTableView.reloadData()
+        UIView.performWithoutAnimation {
+            self.profileTableView.reloadData()
+            self.profileTableView.layoutIfNeeded()
+        }
     }
     
     func updateLikesCountAndUI() {
         let likes = likesStorage.getAllLikes()
         likesCount = likes.count
-        profileTableView.reloadData()
+        UIView.performWithoutAnimation {
+            self.profileTableView.reloadData()
+            self.profileTableView.layoutIfNeeded()
+        }
     }
 }
 
@@ -201,10 +230,16 @@ extension ProfileView: UITableViewDelegate, UITableViewDataSource {
             )
         )?.withRenderingMode(.alwaysTemplate)
         let chevronImageView = UIImageView(image: chevronImage)
+        chevronImageView.backgroundColor = .clear
         
         cell.accessoryView = chevronImageView
         cell.tintColor = UIColor(resource: .yBlack)
         cell.selectionStyle = .none
+        
+        // Важно: единый фон для исключения мерцаний
+        cell.backgroundColor = .systemBackground
+        cell.contentView.backgroundColor = .systemBackground
+        
         return cell
     }
     
