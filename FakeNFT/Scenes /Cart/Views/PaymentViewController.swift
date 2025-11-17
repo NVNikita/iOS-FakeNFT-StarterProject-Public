@@ -223,7 +223,7 @@ final class PaymentViewController: UIViewController {
                 switch result {
                 case .success(let paymentResult):
                     if paymentResult.success {
-                        let successVC = SuccessfulPayment()
+                        let successVC = SuccessfulPaymentViewController()
                         successVC.modalPresentationStyle = .fullScreen
                         self?.present(successVC, animated: true)
                     } else {

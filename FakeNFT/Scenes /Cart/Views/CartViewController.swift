@@ -198,7 +198,7 @@ final class CartViewController: UIViewController {
         }
     }
     
-    private func updateUI() {
+    func updateUI() {
         nftItems = cartService.getNFTs()
         nftCountLabel.text = "\(nftItems.count) NFT"
         priceNFTLabel.text = cartService.getTotalPrice()

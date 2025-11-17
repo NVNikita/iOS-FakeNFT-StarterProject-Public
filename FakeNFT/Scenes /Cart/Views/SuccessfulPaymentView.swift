@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SuccessfulPayment: UIViewController {
+final class SuccessfulPaymentViewController: UIViewController {
     
     private enum Constants {
         static let cornerRadius16: CGFloat = 16
@@ -86,6 +86,25 @@ final class SuccessfulPayment: UIViewController {
     }
     
     @objc private func cartButtonTap() {
-        //TODO: add cart transition logic
+        view.window?.rootViewController?.dismiss(animated: true) { [weak self] in
+            self?.switchToCartTabAndClearCart()
+        }
+    }
+    
+    private func switchToCartTabAndClearCart() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let tabBarController = window.rootViewController as? TabBarController else {
+            return
+        }
+        
+        tabBarController.selectedIndex = 1
+        
+        CartService.shared.clearCart()
+        
+        if let navController = tabBarController.viewControllers?[1] as? UINavigationController,
+           let cartVC = navController.viewControllers.first as? CartViewController {
+            cartVC.updateUI()
+        }
     }
 }
