@@ -118,14 +118,17 @@ final class UserRatingCell: UITableViewCell {
         rankLabel.text = "\(rank)"
         nameLabel.text = user.name
         nftCountLabel.text = "\(user.nftCount)"
-
+        
         let avatarURLString = user.avatar
         
-        if let urlString = avatarURLString, !urlString.isEmpty {
-            // TODO: Загрузка изображения по URL
-            avatarImageView.image = nil
-            avatarImageView.backgroundColor = .systemGray5
+        if let urlString = avatarURLString,
+           let url = URL(string: urlString) {
+            
+            let placeholderImage = UIImage(named: "userPFP")
+            avatarImageView.setImage(from: url, placeholder: placeholderImage)
+            
         } else {
+            avatarImageView.cancelLoading()
             avatarImageView.image = UIImage(named: "userPFP")
             avatarImageView.backgroundColor = .clear
         }
@@ -133,7 +136,11 @@ final class UserRatingCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
+        avatarImageView.cancelLoading()
+        
         avatarImageView.image = nil
+        avatarImageView.backgroundColor = .systemGray5
         nameLabel.text = nil
         nftCountLabel.text = nil
         rankLabel.text = nil

@@ -118,6 +118,9 @@
 				Controller/StatisticsViewController.swift,
 				Models/StatisticsContracts.swift,
 				Models/UserModel.swift,
+				"NetworkService/UIImageView+Extension.swift",
+				NetworkService/UserServiceImpl.swift,
+				NetworkService/UserServiceProtocol.swift,
 				Presenter/StatisticsPresenter.swift,
 				Views/UserRatingCell.swift,
 			);

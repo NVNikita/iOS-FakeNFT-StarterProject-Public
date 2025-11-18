@@ -23,8 +23,14 @@ final class TabBarController: UITabBarController {
             servicesAssembly: servicesAssembly
         )
         catalogController.tabBarItem = catalogTabBarItem
-
-        let statisticsPresenter = StatisticsPresenter(view: nil)
+        
+        let userService = servicesAssembly.userService
+        
+        let statisticsPresenter = StatisticsPresenter(
+            view: nil,
+            userService: userService
+        )
+        
         let statisticsController = StatisticsViewController(presenter: statisticsPresenter)
         statisticsPresenter.view = statisticsController
         
