@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class SuccessfulPaymentViewController: UIViewController {
+final class SuccessfulPaymentViewController: UIViewController, SuccessfulPaymentViewProtocol {
     
     private enum Constants {
         static let cornerRadius16: CGFloat = 16

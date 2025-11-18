@@ -2,20 +2,12 @@
 //  CartViewController.swift
 //  FakeNFT
 //
-//  Created by Никита Нагорный on 26.10.2025.
-//
 
 import UIKit
 import Kingfisher
 import ProgressHUD
 
 final class CartViewController: UIViewController {
-    
-    private enum SortType: String, CaseIterable {
-        case price = "price"
-        case rating = "rating"
-        case name = "name"
-    }
     
     private enum Constants {
         static let cornerRadius12: CGFloat = 12
@@ -28,15 +20,9 @@ final class CartViewController: UIViewController {
         static let numberOfLinesTitles: Int = 1
     }
     
-    private let cartService = CartService.shared
-    private let nftService: NftService
-    private var nftItems: [NFTItem] = []
+    private let presenter: CartPresenterProtocol
+    private var nftItems: [NFTItem] { presenter.nftItems }
     private var cartUpdateObserver: NSObjectProtocol?
-    private var isLoading = false
-    
-    private let userDefaults = UserDefaults.standard
-    private let sortTypeKey = "CartSortType"
-    private var currentSortType: SortType = .name
     
     private lazy var nftTableView: UITableView = {
         let tableView = UITableView()
@@ -103,8 +89,8 @@ final class CartViewController: UIViewController {
         return label
     }()
     
-    init(nftService: NftService) {
-        self.nftService = nftService
+    init(presenter: CartPresenterProtocol) {
+        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -114,13 +100,12 @@ final class CartViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadSortType()
         setupUI()
         setupTableView()
         setupConstraints()
         setupCartObserver()
         hideAllUIElements()
-        loadCartData()
+        presenter.viewDidLoad()
     }
     
     private func hideAllUIElements() {
@@ -128,68 +113,6 @@ final class CartViewController: UIViewController {
         footerStackView.isHidden = true
         placeholderTitle.isHidden = true
         navigationItem.rightBarButtonItem = nil
-    }
-    
-    private func showUIElementsForLoadedState() {
-        let isEmpty = nftItems.isEmpty
-        
-        if isEmpty {
-            placeholderTitle.isHidden = false
-            nftTableView.isHidden = true
-            footerStackView.isHidden = true
-            navigationItem.rightBarButtonItem = nil
-        } else {
-            placeholderTitle.isHidden = true
-            nftTableView.isHidden = false
-            footerStackView.isHidden = false
-            setupNavigationBar()
-        }
-    }
-    
-    private func loadSortType() {
-        if let savedSortType = userDefaults.string(forKey: sortTypeKey),
-           let sortType = SortType(rawValue: savedSortType) {
-            currentSortType = sortType
-        } else {
-            currentSortType = .name
-            saveSortType()
-        }
-    }
-    
-    private func saveSortType() {
-        userDefaults.set(currentSortType.rawValue, forKey: sortTypeKey)
-    }
-    
-    private func applyCurrentSort() {
-        switch currentSortType {
-        case .price:
-            sortByPrice()
-        case .rating:
-            sortByRating()
-        case .name:
-            sortByName()
-        }
-    }
-    
-    private func sortByPrice() {
-        nftItems.sort { $0.numericPrice > $1.numericPrice }
-        currentSortType = .price
-        saveSortType()
-        nftTableView.reloadData()
-    }
-    
-    private func sortByRating() {
-        nftItems.sort { $0.rating > $1.rating }
-        currentSortType = .rating
-        saveSortType()
-        nftTableView.reloadData()
-    }
-    
-    private func sortByName() {
-        nftItems.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        currentSortType = .name
-        saveSortType()
-        nftTableView.reloadData()
     }
     
     private func setupNavigationBar() {
@@ -236,7 +159,7 @@ final class CartViewController: UIViewController {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.loadCartData()
+            self?.presenter.viewDidLoad()
         }
     }
     
@@ -270,83 +193,10 @@ final class CartViewController: UIViewController {
         ])
     }
     
-    func loadCartData() {
-        guard !isLoading else { return }
-        
-        isLoading = true
-        
-        hideAllUIElements()
-        ProgressHUD.show()
-        
-        cartService.getCart { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let order):
-                if order.nfts.isEmpty {
-                    self.handleEmptyCart()
-                } else {
-                    self.loadNFTItems(from: order.nfts)
-                }
-            case .failure(let error):
-                self.handleLoadingError(error)
-            }
-        }
-    }
-    
-    private func loadNFTItems(from nftIds: [String]) {
-        cartService.loadNFTs(from: nftIds, nftService: nftService) { [weak self] result in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.isLoading = false
-                ProgressHUD.dismiss()
-                
-                switch result {
-                case .success(let nfts):
-                    self.nftItems = self.cartService.convertToNFTItems(nfts)
-                    self.applyCurrentSort()
-                    self.updateUI()
-                case .failure(let error):
-                    print("Error loading NFTs: \(error)")
-                    self.showErrorAlert(message: "Не удалось загрузить NFT")
-                    self.nftItems = []
-                    self.updateUI()
-                }
-            }
-        }
-    }
-    
-    private func handleEmptyCart() {
-        DispatchQueue.main.async {
-            self.isLoading = false
-            ProgressHUD.dismiss()
-            self.nftItems = []
-            self.updateUI()
-        }
-    }
-    
-    private func handleLoadingError(_ error: Error) {
-        DispatchQueue.main.async {
-            self.isLoading = false
-            ProgressHUD.dismiss()
-            print("Error loading cart: \(error)")
-            self.showErrorAlert(message: "Не удалось загрузить корзину")
-            self.nftItems = self.cartService.getNFTs()
-            self.applyCurrentSort()
-            self.updateUI()
-        }
-    }
-    
-    func updateUI() {
-        nftCountLabel.text = "\(nftItems.count) NFT"
-        priceNFTLabel.text = cartService.getTotalPrice(nftItems: nftItems)
-        nftTableView.reloadData()
-        showUIElementsForLoadedState()
-    }
-    
     @objc private func payButtonTap() {
-        let payVC = PaymentViewController()
+        let paymentPresenter = PaymentPresenter()
+        let payVC = PaymentViewController(presenter: paymentPresenter)
+        paymentPresenter.view = payVC
         
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.backward"),
@@ -373,15 +223,15 @@ final class CartViewController: UIViewController {
             preferredStyle: .actionSheet)
         
         let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { [weak self] _ in
-            self?.sortByPrice()
+            self?.presenter.didSelectSortType("price")
         }
         
         let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { [weak self] _ in
-            self?.sortByRating()
+            self?.presenter.didSelectSortType("rating")
         }
         
         let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { [weak self] _ in
-            self?.sortByName()
+            self?.presenter.didSelectSortType("name")
         }
         
         let closeButton = UIAlertAction(title: "Закрыть", style: .cancel)
@@ -394,7 +244,46 @@ final class CartViewController: UIViewController {
         self.present(alert, animated: true)
     }
     
-    private func showErrorAlert(message: String) {
+    deinit {
+        if let observer = cartUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+}
+
+extension CartViewController: CartViewProtocol {
+    func reloadTableView() {
+        nftTableView.reloadData()
+    }
+    
+    func updateFooterInfo(count: String, price: String) {
+        nftCountLabel.text = count
+        priceNFTLabel.text = price
+    }
+    
+    func showLoading() {
+        ProgressHUD.show()
+    }
+    
+    func hideLoading() {
+        ProgressHUD.dismiss()
+    }
+    
+    func showUIForEmptyState() {
+        placeholderTitle.isHidden = false
+        nftTableView.isHidden = true
+        footerStackView.isHidden = true
+        navigationItem.rightBarButtonItem = nil
+    }
+    
+    func showUIForLoadedState() {
+        placeholderTitle.isHidden = true
+        nftTableView.isHidden = false
+        footerStackView.isHidden = false
+        setupNavigationBar()
+    }
+    
+    func showErrorAlert(message: String) {
         let alert = UIAlertController(
             title: "Ошибка",
             message: message,
@@ -402,12 +291,6 @@ final class CartViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
-    }
-    
-    deinit {
-        if let observer = cartUpdateObserver {
-            NotificationCenter.default.removeObserver(observer)
-        }
     }
 }
 
@@ -485,26 +368,9 @@ extension CartViewController {
         
         alertVC.onDeleteButtonTapped = { [weak self] in
             print("Удалить tapped для indexPath: \(indexPath)")
-            self?.performDelete(at: indexPath)
+            self?.presenter.didTapDeleteNFT(at: indexPath.row)
         }
         
         present(alertVC, animated: true)
-    }
-    
-    private func performDelete(at indexPath: IndexPath) {
-        let nftItem = nftItems[indexPath.row]
-        
-        cartService.removeFromCart(nftId: nftItem.id) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self?.nftItems.remove(at: indexPath.row)
-                    self?.updateUI()
-                case .failure(let error):
-                    print("Error removing NFT: \(error)")
-                    self?.showErrorAlert(message: "Не удалось удалить NFT")
-                }
-            }
-        }
     }
 }

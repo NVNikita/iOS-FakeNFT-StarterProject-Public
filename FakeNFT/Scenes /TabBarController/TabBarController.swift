@@ -22,11 +22,13 @@ final class TabBarController: UITabBarController {
             servicesAssembly: servicesAssembly
         )
         
-        let cartController = CartViewController(nftService: servicesAssembly.nftService)
+        let cartPresenter = CartPresenter(nftService: servicesAssembly.nftService)
+        let cartController = CartViewController(presenter: cartPresenter)
+        cartPresenter.view = cartController
+        
         let cartNavigationController = UINavigationController(rootViewController: cartController)
         
         catalogController.tabBarItem = catalogTabBarItem
-        
         cartController.tabBarItem = cartItem
 
         viewControllers = [catalogController, cartNavigationController]

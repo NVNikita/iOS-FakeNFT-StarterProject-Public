@@ -11,10 +11,9 @@ import ProgressHUD
 
 final class PaymentViewController: UIViewController {
     
-    private var currencies: [Currency] = []
-    private let currencyService: CurrencyServiceProtocol
-    private var selectedCurrencyIndex: Int?
-    private let orderId: String?
+    private let presenter: PaymentPresenterProtocol
+    private var currencies: [Currency] { presenter.currencies }
+    private var selectedCurrencyIndex: Int? { presenter.selectedCurrencyIndex }
     
     private enum Constants {
         static let spacing: CGFloat = 16
@@ -46,10 +45,11 @@ final class PaymentViewController: UIViewController {
         button.setTitle(Constants.buttonText, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.bold17SFPro
-        button.backgroundColor = UIColor.blackYP
+        button.backgroundColor = UIColor.gray
         button.layer.masksToBounds = true
         button.layer.cornerRadius = Constants.cornerRadius16
         button.addTarget(self, action: #selector(payButtonTap), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -72,9 +72,8 @@ final class PaymentViewController: UIViewController {
         return collectionView
     }()
     
-    init(orderId: String? = nil, currencyService: CurrencyServiceProtocol = CurrencyServiceProvider.shared.currencyService) {
-        self.orderId = orderId
-        self.currencyService = currencyService
+    init(presenter: PaymentPresenterProtocol) {
+        self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -89,7 +88,7 @@ final class PaymentViewController: UIViewController {
         setupNavigationBar()
         setupConstaints()
         setupAgreementText()
-        loadCurrencies()
+        presenter.viewDidLoad()
     }
     
     private func setupNavigationBar() {
@@ -174,23 +173,41 @@ final class PaymentViewController: UIViewController {
         ])
     }
     
-    private func loadCurrencies() {
+    @objc private func payButtonTap() {
+        presenter.payButtonTapped()
+    }
+}
+
+extension PaymentViewController: PaymentViewProtocol {
+    func reloadCollectionView() {
+        collectionView.reloadData()
+    }
+    
+    func updatePayButtonState(isEnabled: Bool) {
+        payButton.isEnabled = isEnabled
+        payButton.backgroundColor = isEnabled ? UIColor.blackYP : UIColor.gray
+    }
+    
+    func showLoading() {
         ProgressHUD.show()
-        currencyService.loadCurrencies { [weak self] result in
-            DispatchQueue.main.async {
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let currencies):
-                    self?.currencies = currencies
-                    self?.collectionView.reloadData()
-                case .failure(let error):
-                    self?.showAlertError(message: "Не удалось загрузить валюты") { [weak self] in
-                        self?.loadCurrencies()
-                        print("[PaymentViewController] - [func loadCurrencies] - [Error: \(error)]")
-                    }
-                }
-            }
-        }
+    }
+    
+    func hideLoading() {
+        ProgressHUD.dismiss()
+    }
+    
+    func showLoadError(message: String, retryAction: @escaping () -> Void) {
+        showAlertError(message: message, retryAction: retryAction)
+    }
+    
+    func showPaymentError(message: String, retryAction: @escaping () -> Void) {
+        showAlertError(message: message, retryAction: retryAction)
+    }
+    
+    func showSuccessPayment() {
+        let successVC = SuccessfulPaymentViewController()
+        successVC.modalPresentationStyle = .fullScreen
+        present(successVC, animated: true)
     }
     
     private func showAlertError(message: String, retryAction: @escaping () -> Void) {
@@ -207,40 +224,6 @@ final class PaymentViewController: UIViewController {
         alert.addAction(cancelAction)
         alert.addAction(reloadAction)
         present(alert, animated: true)
-    }
-    
-    private func payment() {
-        guard let selectedIndex = selectedCurrencyIndex else { return }
-        
-        let selectedCurrency = currencies[selectedIndex]
-        ProgressHUD.show()
-        
-        let currentOrderId = orderId ?? "1"
-        
-        currencyService.payOrder(with: selectedCurrency.id, orderId: currentOrderId) { [weak self] result in
-            DispatchQueue.main.async {
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let paymentResult):
-                    if paymentResult.success {
-                        let successVC = SuccessfulPaymentViewController()
-                        successVC.modalPresentationStyle = .fullScreen
-                        self?.present(successVC, animated: true)
-                    } else {
-                        self?.showAlertError(message: "Не удалось произвести оплату") { [weak self] in
-                            self?.payment()
-                        }
-                    }
-                case .failure(let error):
-                    print("[PaymentViewController] - [func payment] - [Error: \(error)]")
-                    break
-                }
-            }
-        }
-    }
-    
-    @objc private func payButtonTap() {
-        payment()
     }
 }
 
@@ -283,9 +266,6 @@ extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedCurrency = currencies[indexPath.item]
-        print("Selected currency: \(selectedCurrency.title)")
-        
         if let previousSelectedIndex = selectedCurrencyIndex {
             let previousIndexPath = IndexPath(item: previousSelectedIndex, section: 0)
             if let previousCell = collectionView.cellForItem(at: previousIndexPath) as? CurrencyCollectionViewCell {
@@ -293,13 +273,11 @@ extension PaymentViewController: UICollectionViewDelegate, UICollectionViewDataS
             }
         }
         
-        selectedCurrencyIndex = indexPath.item
         if let cell = collectionView.cellForItem(at: indexPath) as? CurrencyCollectionViewCell {
             cell.setSelected(true)
         }
         
-        payButton.isEnabled = true
-        payButton.backgroundColor = UIColor.blackYP
+        presenter.didSelectCurrency(at: indexPath.item)
     }
 }
 
