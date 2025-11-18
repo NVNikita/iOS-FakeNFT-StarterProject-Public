@@ -11,10 +11,8 @@ final class SuccessfulPaymentViewController: UIViewController {
     
     private enum Constants {
         static let cornerRadius16: CGFloat = 16
-        
         static let messageTitle: String = "Успех! Оплата прошла,\nпоздравляем с покупкой!"
         static let buttonText: String = "Вернуться в корзину"
-        
         static let numberOfLines: Int = 0
     }
     
@@ -46,6 +44,12 @@ final class SuccessfulPaymentViewController: UIViewController {
         button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(cartButtonTap), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var presenter: SuccessfulPaymentPresenter = {
+        let presenter = SuccessfulPaymentPresenter()
+        presenter.view = self
+        return presenter
     }()
     
     override func viewDidLoad() {
@@ -86,34 +90,6 @@ final class SuccessfulPaymentViewController: UIViewController {
     }
     
     @objc private func cartButtonTap() {
-        view.window?.rootViewController?.dismiss(animated: true) { [weak self] in
-            self?.switchToCartTabAndClearCart()
-        }
-    }
-    
-    private func switchToCartTabAndClearCart() {
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let tabBarController = window.rootViewController as? TabBarController else {
-            return
-        }
-        
-        tabBarController.selectedIndex = 1
-        
-        CartService.shared.clearCart { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    print("Корзина успешно очищена после оплаты")
-                case .failure(let error):
-                    print("Ошибка при очистке корзины: \(error)")
-                }
-                
-                if let navController = tabBarController.viewControllers?[1] as? UINavigationController,
-                   let cartVC = navController.viewControllers.first as? CartViewController {
-                    cartVC.loadCartData()
-                }
-            }
-        }
+        presenter.cartButtonTapped()
     }
 }

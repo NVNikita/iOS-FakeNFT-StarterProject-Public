@@ -56,6 +56,7 @@
 		EB50FAE72ECB8A0100A38418 /* ClearOrderRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB50FAE62ECB8A0000A38418 /* ClearOrderRequest.swift */; };
 		EB658C632EBFA839002D4CE4 /* CurrencyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */; };
 		EB658C652EC00143002D4CE4 /* CustomAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */; };
+		EB760FE42ECC729300662B1E /* SuccessfulPaymentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB760FE32ECC729100662B1E /* SuccessfulPaymentPresenter.swift */; };
 		EBC222532EC4BA9E00DA4A0C /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222522EC4BA9B00DA4A0C /* Currency.swift */; };
 		EBC222552EC4BAD500DA4A0C /* CurrencyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222542EC4BAD300DA4A0C /* CurrencyService.swift */; };
 		EBC222572EC4BAF900DA4A0C /* CurrencyRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC222562EC4BAEF00DA4A0C /* CurrencyRequest.swift */; };
@@ -139,6 +140,7 @@
 		EB50FAE62ECB8A0000A38418 /* ClearOrderRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClearOrderRequest.swift; sourceTree = "<group>"; };
 		EB658C622EBFA828002D4CE4 /* CurrencyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCollectionViewCell.swift; sourceTree = "<group>"; };
 		EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertViewController.swift; sourceTree = "<group>"; };
+		EB760FE32ECC729100662B1E /* SuccessfulPaymentPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessfulPaymentPresenter.swift; sourceTree = "<group>"; };
 		EBC222522EC4BA9B00DA4A0C /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		EBC222542EC4BAD300DA4A0C /* CurrencyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyService.swift; sourceTree = "<group>"; };
 		EBC222562EC4BAEF00DA4A0C /* CurrencyRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyRequest.swift; sourceTree = "<group>"; };
@@ -425,6 +427,7 @@
 		EB1159F52EAE5BDF00354BB4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				EB760FE32ECC729100662B1E /* SuccessfulPaymentPresenter.swift */,
 				EBC2225E2EC5392700DA4A0C /* SuccessfulPaymentView.swift */,
 				EB658C642EC0013F002D4CE4 /* CustomAlertViewController.swift */,
 				EB011EBC2EB76CA2006F7CB7 /* WebViewController.swift */,
@@ -644,6 +647,7 @@
 				EBC222592EC4BB2800DA4A0C /* CurrencyStorage.swift in Sources */,
 				0C79EE6C2A76DE2E00EE90EA /* ServicesAssemly.swift in Sources */,
 				0CFCB74E2A7817DC0009A829 /* NftStorage.swift in Sources */,
+				EB760FE42ECC729300662B1E /* SuccessfulPaymentPresenter.swift in Sources */,
 				3FC8C39129D2453B0081F015 /* ExamplePutRequest.swift in Sources */,
 				0CFCB7462A78064B0009A829 /* NftDetailCellModel.swift in Sources */,
 				0CFCB74B2A780EA80009A829 /* UIView+Constraints.swift in Sources */,
