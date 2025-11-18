@@ -7,6 +7,7 @@
 
 import UIKit
 import Kingfisher
+import ProgressHUD
 
 final class CartViewController: UIViewController {
     
@@ -102,13 +103,6 @@ final class CartViewController: UIViewController {
         return label
     }()
     
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .medium)
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.hidesWhenStopped = true
-        return indicator
-    }()
-    
     init(nftService: NftService) {
         self.nftService = nftService
         super.init(nibName: nil, bundle: nil)
@@ -121,12 +115,35 @@ final class CartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadSortType()
-        setupNavigationBar()
         setupUI()
         setupTableView()
         setupConstraints()
         setupCartObserver()
+        hideAllUIElements()
         loadCartData()
+    }
+    
+    private func hideAllUIElements() {
+        nftTableView.isHidden = true
+        footerStackView.isHidden = true
+        placeholderTitle.isHidden = true
+        navigationItem.rightBarButtonItem = nil
+    }
+    
+    private func showUIElementsForLoadedState() {
+        let isEmpty = nftItems.isEmpty
+        
+        if isEmpty {
+            placeholderTitle.isHidden = false
+            nftTableView.isHidden = true
+            footerStackView.isHidden = true
+            navigationItem.rightBarButtonItem = nil
+        } else {
+            placeholderTitle.isHidden = true
+            nftTableView.isHidden = false
+            footerStackView.isHidden = false
+            setupNavigationBar()
+        }
     }
     
     private func loadSortType() {
@@ -205,7 +222,6 @@ final class CartViewController: UIViewController {
         footerStackView.addSubview(priceNFTLabel)
         footerStackView.addSubview(payButton)
         view.addSubview(placeholderTitle)
-        view.addSubview(activityIndicator)
     }
     
     private func setupTableView() {
@@ -250,10 +266,7 @@ final class CartViewController: UIViewController {
             placeholderTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             placeholderTitle.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             placeholderTitle.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            placeholderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            placeholderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -261,8 +274,9 @@ final class CartViewController: UIViewController {
         guard !isLoading else { return }
         
         isLoading = true
-        activityIndicator.startAnimating()
-        placeholderTitle.isHidden = true
+        
+        hideAllUIElements()
+        ProgressHUD.show()
         
         cartService.getCart { [weak self] result in
             guard let self = self else { return }
@@ -286,7 +300,7 @@ final class CartViewController: UIViewController {
             
             DispatchQueue.main.async {
                 self.isLoading = false
-                self.activityIndicator.stopAnimating()
+                ProgressHUD.dismiss()
                 
                 switch result {
                 case .success(let nfts):
@@ -306,7 +320,7 @@ final class CartViewController: UIViewController {
     private func handleEmptyCart() {
         DispatchQueue.main.async {
             self.isLoading = false
-            self.activityIndicator.stopAnimating()
+            ProgressHUD.dismiss()
             self.nftItems = []
             self.updateUI()
         }
@@ -315,7 +329,7 @@ final class CartViewController: UIViewController {
     private func handleLoadingError(_ error: Error) {
         DispatchQueue.main.async {
             self.isLoading = false
-            self.activityIndicator.stopAnimating()
+            ProgressHUD.dismiss()
             print("Error loading cart: \(error)")
             self.showErrorAlert(message: "Не удалось загрузить корзину")
             self.nftItems = self.cartService.getNFTs()
@@ -324,25 +338,11 @@ final class CartViewController: UIViewController {
         }
     }
     
-    private func checkPlaceholder() {
-        let isEmpty = nftItems.isEmpty
-        
-        placeholderTitle.isHidden = !isEmpty
-        nftTableView.isHidden = isEmpty
-        footerStackView.isHidden = isEmpty
-        
-        if isEmpty {
-            navigationItem.rightBarButtonItem = nil
-        } else {
-            setupNavigationBar()
-        }
-    }
-    
     func updateUI() {
         nftCountLabel.text = "\(nftItems.count) NFT"
         priceNFTLabel.text = cartService.getTotalPrice(nftItems: nftItems)
-        checkPlaceholder()
         nftTableView.reloadData()
+        showUIElementsForLoadedState()
     }
     
     @objc private func payButtonTap() {
