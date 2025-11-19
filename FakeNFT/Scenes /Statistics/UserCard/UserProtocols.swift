@@ -11,5 +11,5 @@ protocol UserViewInput: AnyObject {
     func hideLoading()
     func displayUser(name: String, bio: String, avatarURL: URL?, nftCount: Int, websiteVisible: Bool)
     func navigateToWeb(url: URL)
-    func navigateToNFTCollection()
+    func navigateToNFTCollection(nftIDs: [String])
 }

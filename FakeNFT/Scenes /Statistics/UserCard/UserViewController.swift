@@ -191,10 +191,10 @@ extension UserViewController: UserViewInput {
         navigationController?.pushViewController(webVC, animated: true)
     }
     
-    func navigateToNFTCollection() {
-        let vc = UIViewController()
-        vc.view.backgroundColor = .systemBackground
-        vc.title = "Коллекция NFT"
+    func navigateToNFTCollection(nftIDs: [String]) {
+        let service: UserNFTCollectionServiceProtocol = UserNFTCollectionService()
+        let presenter = UserNFTCollectionPresenter(service: service, nftIDs: nftIDs)
+        let vc = UserNFTCollectionViewController(presenter: presenter)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

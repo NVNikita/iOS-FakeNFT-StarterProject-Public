@@ -42,6 +42,6 @@ extension UserPresenter: UserViewOutput {
     
     func didSelectNFTCollection() {
         guard user.nftCount > 0 else { return }
-        view?.navigateToNFTCollection()
+        view?.navigateToNFTCollection(nftIDs: user.nfts)
     }
 }
