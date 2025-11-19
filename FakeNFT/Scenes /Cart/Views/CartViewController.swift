@@ -2,18 +2,12 @@
 //  CartViewController.swift
 //  FakeNFT
 //
-//  Created by Никита Нагорный on 26.10.2025.
-//
 
 import UIKit
+import Kingfisher
+import ProgressHUD
 
 final class CartViewController: UIViewController {
-    
-    private var nftItems: [NFTItem] = [
-        NFTItem(id: "1", name: "NFT 1", price: "1,18 ETH", rating: 3, image: UIImage(named: "test_nft")),
-        NFTItem(id: "2", name: "NFT 2", price: "1,18 ETH", rating: 1, image: UIImage(named: "test_nft")),
-        NFTItem(id: "3", name: "NFT 3", price: "1,18 ETH", rating: 5, image: UIImage(named: "test_nft"))
-    ]
     
     private enum Constants {
         static let cornerRadius12: CGFloat = 12
@@ -25,6 +19,10 @@ final class CartViewController: UIViewController {
         
         static let numberOfLinesTitles: Int = 1
     }
+    
+    private let presenter: CartPresenterProtocol
+    private var nftItems: [NFTItem] { presenter.nftItems }
+    private var cartUpdateObserver: NSObjectProtocol?
     
     private lazy var nftTableView: UITableView = {
         let tableView = UITableView()
@@ -50,7 +48,6 @@ final class CartViewController: UIViewController {
     
     private lazy var nftCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "3 NFT"
         label.font = UIFont.regular15SFPro
         label.textColor = UIColor.blackYP
         label.numberOfLines = Constants.numberOfLinesTitles
@@ -60,7 +57,6 @@ final class CartViewController: UIViewController {
     
     private lazy var priceNFTLabel: UILabel = {
         let label = UILabel()
-        label.text = "3,54 ETH"
         label.textColor = UIColor.greenYP
         label.font = UIFont.bold17SFPro
         label.numberOfLines = Constants.numberOfLinesTitles
@@ -93,13 +89,30 @@ final class CartViewController: UIViewController {
         return label
     }()
     
+    init(presenter: CartPresenterProtocol) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
         setupUI()
         setupTableView()
         setupConstraints()
-        updateUIAfterDeletion()
+        setupCartObserver()
+        hideAllUIElements()
+        presenter.viewDidLoad()
+    }
+    
+    private func hideAllUIElements() {
+        nftTableView.isHidden = true
+        footerStackView.isHidden = true
+        placeholderTitle.isHidden = true
+        navigationItem.rightBarButtonItem = nil
     }
     
     private func setupNavigationBar() {
@@ -140,6 +153,16 @@ final class CartViewController: UIViewController {
         nftTableView.register(NFTTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
+    private func setupCartObserver() {
+        cartUpdateObserver = NotificationCenter.default.addObserver(
+            forName: .cartDidUpdate,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.presenter.viewDidLoad()
+        }
+    }
+    
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             nftTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -170,38 +193,10 @@ final class CartViewController: UIViewController {
         ])
     }
     
-    private func checkPlaceholder() {
-        let isEmpty = nftItems.isEmpty
-        
-        placeholderTitle.isHidden = !isEmpty
-        nftTableView.isHidden = isEmpty
-        footerStackView.isHidden = isEmpty
-        
-        if isEmpty {
-            navigationItem.rightBarButtonItem = nil
-        } else {
-            setupNavigationBar()
-        }
-    }
-    
-    private func updateUIAfterDeletion() {
-        nftCountLabel.text = "\(nftItems.count) NFT"
-        
-        let totalPrice = calculateTotalPrice()
-        priceNFTLabel.text = totalPrice
-        
-        checkPlaceholder()
-        
-        nftTableView.reloadData()
-    }
-    
-    private func calculateTotalPrice() -> String {
-        let totalPrice = Double(nftItems.count) * 1.18
-        return String(format: "%.2f ETH", totalPrice)
-    }
-    
     @objc private func payButtonTap() {
-        let payVC = PaymentViewController()
+        let paymentPresenter = PaymentPresenter()
+        let payVC = PaymentViewController(presenter: paymentPresenter)
+        paymentPresenter.view = payVC
         
         let backButton = UIBarButtonItem(
             image: UIImage(systemName: "chevron.backward"),
@@ -227,16 +222,16 @@ final class CartViewController: UIViewController {
             message: nil,
             preferredStyle: .actionSheet)
         
-        let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { _ in
-            print("priceButtonSort tap")
+        let priceButtonSort = UIAlertAction(title: "По цене", style: .default) { [weak self] _ in
+            self?.presenter.didSelectSortType("price")
         }
         
-        let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { _ in
-            print("raitingButtonSort tap")
+        let raitingButtonSort = UIAlertAction(title: "По рейтингу", style: .default) { [weak self] _ in
+            self?.presenter.didSelectSortType("rating")
         }
         
-        let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { _ in
-            print("nameButtonSort tap")
+        let nameButtonSort = UIAlertAction(title: "По названию", style: .default) { [weak self] _ in
+            self?.presenter.didSelectSortType("name")
         }
         
         let closeButton = UIAlertAction(title: "Закрыть", style: .cancel)
@@ -247,6 +242,55 @@ final class CartViewController: UIViewController {
         alert.addAction(closeButton)
         
         self.present(alert, animated: true)
+    }
+    
+    deinit {
+        if let observer = cartUpdateObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+}
+
+extension CartViewController: CartViewProtocol {
+    func reloadTableView() {
+        nftTableView.reloadData()
+    }
+    
+    func updateFooterInfo(count: String, price: String) {
+        nftCountLabel.text = count
+        priceNFTLabel.text = price
+    }
+    
+    func showLoading() {
+        ProgressHUD.show()
+    }
+    
+    func hideLoading() {
+        ProgressHUD.dismiss()
+    }
+    
+    func showUIForEmptyState() {
+        placeholderTitle.isHidden = false
+        nftTableView.isHidden = true
+        footerStackView.isHidden = true
+        navigationItem.rightBarButtonItem = nil
+    }
+    
+    func showUIForLoadedState() {
+        placeholderTitle.isHidden = true
+        nftTableView.isHidden = false
+        footerStackView.isHidden = false
+        setupNavigationBar()
+    }
+    
+    func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
@@ -263,8 +307,21 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         
         let nftItem = nftItems[indexPath.row]
         
+        if let imageURLString = nftItem.imageURL, let imageURL = URL(string: imageURLString) {
+            cell.imageNFT.kf.setImage(
+                with: imageURL,
+                placeholder: UIImage(named: "placeholder"),
+                options: [
+                    .transition(.fade(0.2)),
+                    .cacheOriginalImage
+                ]
+            )
+        } else {
+            cell.imageNFT.image = nil
+        }
+        
         cell.config(
-            image: nftItem.image,
+            image: cell.imageNFT.image,
             nameNFT: nftItem.name,
             rating: nftItem.rating,
             priceNFT: nftItem.price
@@ -289,7 +346,21 @@ extension CartViewController {
         alertVC.modalTransitionStyle = .crossDissolve
         
         let nftItem = nftItems[indexPath.row]
-        alertVC.configure(imageView: nftItem.image)
+        
+        if let imageURLString = nftItem.imageURL, let imageURL = URL(string: imageURLString) {
+            KingfisherManager.shared.retrieveImage(with: imageURL) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let imageResult):
+                        alertVC.configure(imageView: imageResult.image)
+                    case .failure:
+                        alertVC.configure(imageView: nil)
+                    }
+                }
+            }
+        } else {
+            alertVC.configure(imageView: nil)
+        }
         
         alertVC.onBackButtonTapped = {
             print("Вернуться tapped - отмена удаления")
@@ -297,19 +368,9 @@ extension CartViewController {
         
         alertVC.onDeleteButtonTapped = { [weak self] in
             print("Удалить tapped для indexPath: \(indexPath)")
-            self?.performDelete(at: indexPath)
+            self?.presenter.didTapDeleteNFT(at: indexPath.row)
         }
         
         present(alertVC, animated: true)
-    }
-    
-    private func performDelete(at indexPath: IndexPath) {
-        nftItems.remove(at: indexPath.row)
-        
-        nftTableView.performBatchUpdates({
-            nftTableView.deleteRows(at: [indexPath], with: .automatic)
-        }, completion: { [weak self] _ in
-            self?.updateUIAfterDeletion()
-        })
     }
 }

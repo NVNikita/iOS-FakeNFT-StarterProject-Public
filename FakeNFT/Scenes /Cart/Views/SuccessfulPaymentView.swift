@@ -7,14 +7,12 @@
 
 import UIKit
 
-final class SuccessfulPayment: UIViewController {
+final class SuccessfulPaymentViewController: UIViewController, SuccessfulPaymentViewProtocol {
     
     private enum Constants {
         static let cornerRadius16: CGFloat = 16
-        
         static let messageTitle: String = "Успех! Оплата прошла,\nпоздравляем с покупкой!"
         static let buttonText: String = "Вернуться в корзину"
-        
         static let numberOfLines: Int = 0
     }
     
@@ -46,6 +44,12 @@ final class SuccessfulPayment: UIViewController {
         button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(cartButtonTap), for: .touchUpInside)
         return button
+    }()
+    
+    private lazy var presenter: SuccessfulPaymentPresenter = {
+        let presenter = SuccessfulPaymentPresenter()
+        presenter.view = self
+        return presenter
     }()
     
     override func viewDidLoad() {
@@ -86,6 +90,6 @@ final class SuccessfulPayment: UIViewController {
     }
     
     @objc private func cartButtonTap() {
-        //TODO: add cart transition logic
+        presenter.cartButtonTapped()
     }
 }
