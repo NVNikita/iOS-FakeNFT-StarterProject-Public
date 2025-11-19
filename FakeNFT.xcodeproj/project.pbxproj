@@ -122,6 +122,11 @@
 				NetworkService/UserServiceImpl.swift,
 				NetworkService/UserServiceProtocol.swift,
 				Presenter/StatisticsPresenter.swift,
+				UserCard/UserCollectionCell.swift,
+				UserCard/UserPresenter.swift,
+				UserCard/UserProtocols.swift,
+				UserCard/UserViewController.swift,
+				UserCard/WebViewController.swift,
 				Views/UserRatingCell.swift,
 			);
 			target = 3F68069229CBBAF100B4F915 /* FakeNFT */;

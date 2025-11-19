@@ -162,7 +162,15 @@ extension StatisticsViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let user = users[indexPath.row]
-        print("Selected user: \(user.name)")
+        
+        let userPresenter = UserPresenter(user: user)
+        
+        let userVC = UserViewController(presenter: userPresenter)
+        
+        userPresenter.view = userVC
+        
+        navigationController?.pushViewController(userVC, animated: true)
     }
 }
