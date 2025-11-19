@@ -20,6 +20,12 @@ final class StatisticsViewController: UIViewController {
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
+    
+    private lazy var refreshControl: UIRefreshControl = {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(refreshList(_:)), for: .valueChanged)
+        return control
+    }()
 
     private lazy var sortButton: UIButton = {
         let button = UIButton(type: .system)
@@ -61,6 +67,8 @@ final class StatisticsViewController: UIViewController {
         view.backgroundColor = UIColor(named: "White")
         view.addSubview(tableView)
         view.addSubview(activityIndicator)
+        
+        tableView.refreshControl = refreshControl
     }
 
     private func setupConstraints() {
@@ -108,25 +116,40 @@ final class StatisticsViewController: UIViewController {
 
         present(alert, animated: true)
     }
+    
+    @objc private func refreshList(_ sender: UIRefreshControl) {
+        presenter.viewDidLoad()
+    }
 }
 
 // MARK: - StatisticsViewInput
 
 extension StatisticsViewController: StatisticsViewInput {
-
-    func showLoading() {
-        tableView.isHidden = true
-        activityIndicator.startAnimating()
-    }
-
-    func hideLoading() {
-        activityIndicator.stopAnimating()
-        tableView.isHidden = false
-    }
-
     func showUsers(_ users: [User]) {
         self.users = users
         tableView.reloadData()
+    }
+    
+    func showLoading() {
+        showLoadingIndicator()
+    }
+    
+    func hideLoading() {
+        hideLoadingIndicator()
+    }
+    
+    func showError(message: String) {
+        hideLoadingIndicator()
+        
+        let alert = UIAlertController(
+            title: "Ошибка",
+            message: message,
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        present(alert, animated: true)
     }
 }
 
@@ -164,5 +187,22 @@ extension StatisticsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = users[indexPath.row]
         print("Selected user: \(user.name)")
+    }
+}
+
+// MARK: - LoadingView
+
+private extension StatisticsViewController {
+    func showLoadingIndicator() {
+        if !refreshControl.isRefreshing {
+            tableView.isHidden = true
+            activityIndicator.startAnimating()
+        }
+    }
+    
+    func hideLoadingIndicator() {
+        activityIndicator.stopAnimating()
+        tableView.isHidden = false
+        refreshControl.endRefreshing()
     }
 }
