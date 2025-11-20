@@ -74,6 +74,7 @@ final class UserViewController: UIViewController {
     init(presenter: UserViewOutput) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.hidesBottomBarWhenPushed = true
     }
     
     required init?(coder: NSCoder) {
