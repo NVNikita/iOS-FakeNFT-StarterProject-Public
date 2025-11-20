@@ -1,39 +1,75 @@
 import UIKit
 
 final class TabBarController: UITabBarController {
+    // Собираем сервисы здесь
     let servicesAssembly = ServicesAssembly(
         networkClient: DefaultNetworkClient(),
         nftStorage: NftStorageImpl(),
         myNftStorage: MyNftStorageImpl()
     )
     
+    // Tab bar items
     private let catalogTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.catalog", comment: ""),
-        image: UIImage(systemName: "square.stack.3d.up.fill"),
+        image: UIImage(resource: .catalog),
         tag: 0
     )
     
+    private let cartTabBarItem = UITabBarItem(
+        title: NSLocalizedString("Tab.cart", comment: ""),
+        image: UIImage(resource: .tabBasket),
+        tag: 1
+    )
+    
     private let profileTabBarItem = UITabBarItem(
-        title: "Профиль",
-        image: UIImage(named: "Profile"),
-        tag: 0
+        title: NSLocalizedString("Tab.profile", comment: "Профиль"),
+        image: UIImage(systemName: "person.crop.circle"),
+        tag: 2
+    )
+    
+    private let statsTabBarItem = UITabBarItem(
+        title: NSLocalizedString("Tab.stats", comment: "Статистика"),
+        image: UIImage(resource: .noActive),
+        tag: 3
     )
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let profileViewController = ProfileViewController(servicesAssembly: servicesAssembly)
-        profileViewController.tabBarItem = profileTabBarItem
-        let profileNavController = UINavigationController(rootViewController: profileViewController)
+        // Профиль
+        let profileController = ProfileViewController(servicesAssembly: servicesAssembly)
+        profileController.tabBarItem = profileTabBarItem
+        let profileNavigationController = UINavigationController(rootViewController: profileController)
         
-        let catalogController = TestCatalogViewController(
-            servicesAssembly: servicesAssembly
-        )
+        // Каталог
+        let catalogController = TestCatalogViewController(servicesAssembly: servicesAssembly)
         catalogController.tabBarItem = catalogTabBarItem
         
-        viewControllers = [catalogController,profileNavController]
+        // Корзина — заглушка
+        let cartController = UIViewController()
+        cartController.view.backgroundColor = .systemBackground
+        cartController.title = NSLocalizedString("Tab.cart", comment: "Корзина")
+        cartController.tabBarItem = cartTabBarItem
+        let cartNavigationController = UINavigationController(rootViewController: cartController)
         
+        // Статистика — заглушка
+        let statsController = UIViewController()
+        statsController.view.backgroundColor = .systemBackground
+        statsController.title = NSLocalizedString("Tab.stats", comment: "Статистика")
+        statsController.tabBarItem = statsTabBarItem
+        let statsNavigationController = UINavigationController(rootViewController: statsController)
+        
+        // Порядок вкладок: Профиль, Каталог, Корзина, Статистика
+        viewControllers = [
+            profileNavigationController,
+            catalogController,
+            cartNavigationController,
+            statsNavigationController
+        ]
+        
+        // Оформление
+        tabBar.tintColor = .systemBlue
+        tabBar.unselectedItemTintColor = .secondaryLabel
         view.backgroundColor = .systemBackground
     }
 }
-
