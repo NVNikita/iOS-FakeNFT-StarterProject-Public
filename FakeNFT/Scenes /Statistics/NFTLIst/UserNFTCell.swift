@@ -33,7 +33,7 @@ final class UserNFTCell: UICollectionViewCell {
         stack.axis = .horizontal
         stack.spacing = 2
         stack.alignment = .center
-        stack.distribution = .fill
+        stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
@@ -75,12 +75,18 @@ final class UserNFTCell: UICollectionViewCell {
         infoContainer.translatesAutoresizingMaskIntoConstraints = false
 
         contentView.addSubview(infoContainer)
+        
+        ratingStack.setContentCompressionResistancePriority(.required, for: .horizontal)
+        ratingStack.setContentHuggingPriority(.required, for: .horizontal)
+        
 
         cartButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         cartButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         
         textStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        cartButton.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        textStack.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        cartButton.setContentHuggingPriority(.required, for: .horizontal)
+        cartButton.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         NSLayoutConstraint.activate([
             nftImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -128,6 +134,8 @@ final class UserNFTCell: UICollectionViewCell {
             ])
 
             ratingStack.addArrangedSubview(iv)
+            iv.setContentCompressionResistancePriority(.required, for: .horizontal)
+            iv.setContentHuggingPriority(.required, for: .horizontal)
         }
     }
 
