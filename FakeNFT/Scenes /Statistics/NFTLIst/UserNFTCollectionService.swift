@@ -36,8 +36,8 @@ final class UserNFTCollectionService: UserNFTCollectionServiceProtocol {
         }
         
         dispatchGroup.notify(queue: .main) {
-            if !errors.isEmpty && nfts.isEmpty {
-                completion(.failure(.generalError(errors.first!)))
+            if nfts.isEmpty, let firstError = errors.first {
+                completion(.failure(.generalError(firstError)))
             } else {
                 completion(.success(nfts))
             }
