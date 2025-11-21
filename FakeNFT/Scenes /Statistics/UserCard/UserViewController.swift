@@ -188,7 +188,7 @@ extension UserViewController: UserViewInput {
     }
     
     func navigateToWeb(url: URL) {
-        let webVC = WebViewController(url: url, title: .none)
+        let webVC = StatisticsWebViewController(url: url, title: .none)
         navigationController?.pushViewController(webVC, animated: true)
     }
     

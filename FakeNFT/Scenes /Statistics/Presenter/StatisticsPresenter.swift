@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-enum SortType: String {
+enum StatisticsSortType: String {
     case rating
     case name
 }
@@ -14,10 +14,10 @@ final class StatisticsPresenter {
 
     private var users: [User] = []
 
-    private var currentSortType: SortType {
+    private var currentSortType: StatisticsSortType {
         get {
             if let savedType = UserDefaults.standard.string(forKey: sortTypeKey),
-               let sortType = SortType(rawValue: savedType) {
+               let sortType = StatisticsSortType(rawValue: savedType) {
                 return sortType
             }
             return .rating

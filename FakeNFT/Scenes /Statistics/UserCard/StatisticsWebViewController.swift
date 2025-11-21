@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-final class WebViewController: UIViewController {
+final class StatisticsWebViewController: UIViewController {
     
     private let webView = WKWebView()
     private let url: URL
