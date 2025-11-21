@@ -330,7 +330,7 @@
 				3F6806C729CBBC5B00B4F915 /* Scenes  */,
 				3F6806C629CBBC4E00B4F915 /* Services */,
 				3F6806A429CBBAF200B4F915 /* Info.plist */,
-				A51BE81C2ED0DA3800AC6500 /* ProfileViewController 2 */,
+				A51BE81C2ED0DA3800AC6500 /* ProfileViewController  */,
 			);
 			path = FakeNFT;
 			sourceTree = "<group>";
@@ -495,7 +495,7 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		A51BE81C2ED0DA3800AC6500 /* ProfileViewController 2 */ = {
+		A51BE81C2ED0DA3800AC6500 /* ProfileViewController  */ = {
 			isa = PBXGroup;
 			children = (
 				A51BE8062ED0DA3800AC6500 /* EditProfile */,
@@ -503,7 +503,7 @@
 				A51BE8112ED0DA3800AC6500 /* My NFT */,
 				A51BE81B2ED0DA3800AC6500 /* Profile */,
 			);
-			path = "ProfileViewController 2";
+			path = "ProfileViewController ";
 			sourceTree = "<group>";
 		};
 		E19CD5A92A98B55900CA39A5 /* Cell */ = {
