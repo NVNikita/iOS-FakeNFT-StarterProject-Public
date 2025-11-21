@@ -15,7 +15,7 @@ final class TabBarController: UITabBarController {
         image: UIImage(resource: .catalog),
         tag: 0
     )
-    
+        
     private let cartTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.cart", comment: ""),
         image: UIImage(resource: .tabBasket),
@@ -28,9 +28,9 @@ final class TabBarController: UITabBarController {
         tag: 2
     )
     
-    private let statsTabBarItem = UITabBarItem(
+    private let statisticsTabBarItem = UITabBarItem(
         title: NSLocalizedString("Tab.stats", comment: "Статистика"),
-        image: UIImage(resource: .noActive),
+        image: UIImage(named: "statistics_NoActive"),
         tag: 3
     )
     
@@ -53,19 +53,26 @@ final class TabBarController: UITabBarController {
         cartController.tabBarItem = cartTabBarItem
         let cartNavigationController = UINavigationController(rootViewController: cartController)
         
-        // Статистика — заглушка
-        let statsController = UIViewController()
-        statsController.view.backgroundColor = .systemBackground
-        statsController.title = NSLocalizedString("Tab.stats", comment: "Статистика")
-        statsController.tabBarItem = statsTabBarItem
-        let statsNavigationController = UINavigationController(rootViewController: statsController)
+        // Статистика
+        let userService = servicesAssembly.userService
+        
+        let statisticsPresenter = StatisticsPresenter(
+            view: nil,
+            userService: userService
+        )
+        
+        let statisticsController = StatisticsViewController(presenter: statisticsPresenter)
+        statisticsPresenter.view = statisticsController
+        
+        let statisticsNavController = UINavigationController(rootViewController: statisticsController)
+        statisticsNavController.tabBarItem = statisticsTabBarItem // Используем наш настроенный TabBarItem
         
         // Порядок вкладок: Профиль, Каталог, Корзина, Статистика
         viewControllers = [
             profileNavigationController,
             catalogController,
             cartNavigationController,
-            statsNavigationController
+            statisticsNavController // Ваша рабочая реализация
         ]
         
         // Оформление

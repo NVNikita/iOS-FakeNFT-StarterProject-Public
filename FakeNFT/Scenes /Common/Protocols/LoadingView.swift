@@ -1,7 +1,7 @@
 import ProgressHUD
 import UIKit
 
-protocol LoadingView {
+protocol LoadingView: AnyObject {
     var activityIndicator: UIActivityIndicatorView { get }
     func showLoading()
     func hideLoading()
