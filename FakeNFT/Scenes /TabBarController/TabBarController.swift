@@ -45,10 +45,10 @@ final class TabBarController: UITabBarController {
         let catalogController = TestCatalogViewController(servicesAssembly: servicesAssembly)
         catalogController.tabBarItem = catalogTabBarItem
         
-        // Корзина — заглушка
-        let cartController = UIViewController()
-        cartController.view.backgroundColor = .systemBackground
-        cartController.title = NSLocalizedString("Tab.cart", comment: "Корзина")
+        // Корзина (ТВОЯ РЕАЛИЗАЦИЯ!)
+        let cartPresenter = CartPresenter(nftService: servicesAssembly.nftService)
+        let cartController = CartViewController(presenter: cartPresenter)
+        cartPresenter.view = cartController
         cartController.tabBarItem = cartTabBarItem
         let cartNavigationController = UINavigationController(rootViewController: cartController)
         
