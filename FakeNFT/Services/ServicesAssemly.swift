@@ -4,7 +4,7 @@ final class ServicesAssembly {
     private let nftStorage: NftStorage
     private let myNftStorage: MyNftStorage
     private let currencyStorage: CurrencyStorageProtocol
-
+    
     init(
         networkClient: NetworkClient,
         nftStorage: NftStorage,
